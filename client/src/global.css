@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nothing+You+Could+Do&display=swap');
+
+/* Fonts */
+.primary-font {
+  font-family: "Nothing You Could Do", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.montserrat {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.test {
+  border: solid 2px red;
+}
+
+/* Colors */
+.base {
+    background-color: #FBF7F4;
+}
+
+.primary {
+  background-color: #5AE4A7;
+}
+
+.primary-text {
+  color: #3AB24A;
+}
+
+.callto {
+  background-color: #21A8B5;
+}
+
+.grey {
+  color: #838383;
+}
+
+.white {
+    color: white;
+}
+
+/* Navbar Styling */
+nav {
+  position: sticky;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+}
+
+.nav-links li {
+  margin-right: 20px;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: rgb(0, 0, 0);
+  font-size: 40px;
+}
+
+.logo {
+  text-decoration: none;
+  color: rgb(0, 0, 0);
+  font-size: 46px;
+  font-weight: bold;
+}
+
+.home-btn {
+    width: 200px;
+    height: 65px;
+    font-size: 25px;
+    letter-spacing: 2px;
+    border-radius: 15px;
+    color: black;
+}
+
+.home-btn:hover {
+  background-color: #4abb88;
+}
+
+
+.cheat {
+    border: solid .1px #7C91BC;
+}
+
+.hero-image {
+  width: 500px;
+  height: auto;
+}
+
+.features-img {
+  width: auto;
+  height: 300px;
+}
+
+.features-card {
+  background-color: #21a9b55f;
+  border-radius: 15px;
+}
+
+.rectangle {
+  background: linear-gradient(to right, #97ECC3 43%, #FBF7F4 30%, #FBF7F4 70%, #FBF7F4 70%);
+}
+
+.mission-headline {
+  font-size: 50px;
+  font-weight: 500;
+  letter-spacing: 2px;
+}
