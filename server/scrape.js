@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer");
 
-const Musix = async () => {
+const Musix = async (url) => {
   const artistArray = [];
   const spanishArray = [];
   const englishArray = [];
@@ -8,9 +8,7 @@ const Musix = async () => {
     defaultViewport: false,
   });
   const page = await browser.newPage();
-  await page.goto(
-    "https://www.musixmatch.com/lyrics/Calibre-50/Y-Yo-Sin-Ti/translation/english"
-  );
+  await page.goto(url);
 
   //Title
   const titleContainer = await page.$('h1[dir="auto"]');
@@ -61,6 +59,8 @@ const Musix = async () => {
     artistArray.push("Unknown Artist");
   }
 
+  console.log(spanishArray)
+
   return [artistArray, titleText, spanishArray, englishArray];
 };
 
@@ -100,7 +100,7 @@ const Translate = async (lyricsArray) => {
   await browser.close();
 };
 
-const Test = async (searchQuery) => {
+const SearchMusix = async (searchQuery) => {
   const browser = await puppeteer.launch({
     headless: false,
     defaultViewport: false,
@@ -109,24 +109,21 @@ const Test = async (searchQuery) => {
   await page.goto("https://www.musixmatch.com/search");
 
   await page.type('input[type="text"]', searchQuery);
-  //var firstResultLink = await page.$('[role="link"]');
 
-  const firstResultHref = await page.evaluate(() => {
-    const firstResultLink = await page.$('[role="link"]');
+  await page.waitForSelector('.css-175oi2r.r-11c0sde.r-1r5su4o');
+  const firstResultHref = await page.$eval('.css-175oi2r.r-11c0sde.r-1r5su4o', parent => {
+    const firstResultLink = parent.querySelector('.css-175oi2r.r-1otgn73');
     return firstResultLink ? firstResultLink.getAttribute('href') : null;
   });
 
-  console.log(firstResultHref)
-
-  //await firstResultLink.evaluate( firstResultLink => firstResultLink.click() );
-
   // Get the current URL after clicking the first result
-  const currentUrl = page.url();
-  console.log("Current URL:", currentUrl);
+  const newUrl = "https://www.musixmatch.com" + firstResultHref + "/translation/english"
+
+  await Musix(newUrl)
 
   await browser.close();
 };
 
-Test("La people");
+SearchMusix("nueva vida");
 
 module.exports = Musix;

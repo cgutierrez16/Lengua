@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nothing+You+Could+Do&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nothing+You+Could+Do&display=swap");
 
 /* Fonts */
 .primary-font {
@@ -21,19 +21,23 @@
 
 /* Colors */
 .base {
-    background-color: #FBF7F4;
+  background-color: #fbf7f4;
 }
 
 .primary {
-  background-color: #5AE4A7;
+  background-color: #5ae4a7;
+}
+
+.light-primary {
+  background-color: #5ae4a66b;
 }
 
 .primary-text {
-  color: #3AB24A;
+  color: #3ab24a;
 }
 
 .callto {
-  background-color: #21A8B5;
+  background-color: #21a8b5;
 }
 
 .grey {
@@ -41,7 +45,7 @@
 }
 
 .white {
-    color: white;
+  color: white;
 }
 
 /* Navbar Styling */
@@ -76,21 +80,20 @@ nav {
 }
 
 .home-btn {
-    width: 200px;
-    height: 65px;
-    font-size: 25px;
-    letter-spacing: 2px;
-    border-radius: 15px;
-    color: black;
+  width: 200px;
+  height: 65px;
+  font-size: 25px;
+  letter-spacing: 2px;
+  border-radius: 15px;
+  color: black;
 }
 
 .home-btn:hover {
   background-color: #4abb88;
 }
 
-
 .cheat {
-    border: solid .1px #7C91BC;
+  border: solid 0.1px #7c91bc;
 }
 
 .hero-image {
@@ -109,11 +112,23 @@ nav {
 }
 
 .rectangle {
-  background: linear-gradient(to right, #97ECC3 43%, #FBF7F4 30%, #FBF7F4 70%, #FBF7F4 70%);
+  background: linear-gradient(
+    to right,
+    #97ecc3 43%,
+    #fbf7f4 30%,
+    #fbf7f4 70%,
+    #fbf7f4 70%
+  );
 }
 
 .mission-headline {
   font-size: 50px;
   font-weight: 500;
   letter-spacing: 2px;
+}
+
+.primary-card {
+  background-color: #5ae4a64e;
+  border: solid 2px #5ae4a7;
+  border-radius: 10px;
 }
