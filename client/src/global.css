@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nothing+You+Could+Do&display=swap");
+@import "~@fortawesome/fontawesome-free/css/all.min.css";
 
 /* Fonts */
 .primary-font {
@@ -131,4 +132,49 @@ nav {
   background-color: #5ae4a64e;
   border: solid 2px #5ae4a7;
   border-radius: 10px;
+}
+
+.album-cover {
+  width: 175px;
+  height: 175px;
+  border-radius: 10px;
+}
+
+.lyrics-border {
+  border: solid 1px black;
+  border-radius: 10px;
+}
+
+#lyric-search-input {
+  height: 60px;
+  background-color: #4abb8851;
+}
+
+#lyric-search-button {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.word-input-blank {
+  border: none;
+}
+
+.lyrics-align {
+  line-height: 2.00;
+  margin-bottom: 10px; /* Remove spacing inconsistencies */
+  display: flex;
+  align-items: center; /* Ensure vertical alignment */
+}
+
+.input-lyrics-align {
+  line-height: 1.7276;
+  margin-bottom: 0; /* Remove spacing inconsistencies */
+  display: flex;
+  align-items: center; /* Ensure vertical alignment */
 }

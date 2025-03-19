@@ -1,9 +1,10 @@
 import React from "react";
+import { Hugging } from '../misc/hugging' 
 
 export const Freewrite = () => {
   return (
     <div>
-      <h1>Balls lol from free write</h1>
+      <Hugging />
     </div>
   );
 };

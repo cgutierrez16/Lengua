@@ -1,0 +1,73 @@
+import React, { useState, useEffect, useRef } from "react";
+
+export const LyricTypingInput = ({ lines }) => {
+  // Initialize state to store user inputs
+  const [inputs, setInputs] = useState(
+    lines.map((line) => line.split(" ").map(() => ""))
+  );
+
+  const inputRefs = useRef([]);
+
+  const handleChange = (e, lineIndex, wordIndex) => {
+    const { value } = e.target;
+    const newInputs = inputs.map((line, li) =>
+      line.map((word, wi) => {
+        if (li === lineIndex && wi === wordIndex) {
+          return value;
+        }
+        return word;
+      })
+    );
+    setInputs(newInputs);
+
+    // Move to next input if current input is full
+    if (value.length >= e.target.maxLength) {
+      const nextInput = inputRefs.current[lineIndex]?.[wordIndex + 1];
+      if (nextInput) {
+        nextInput.focus();
+      }
+    }
+  };
+
+  useEffect(() => {
+    // Initialize inputRefs.current as a 2D array
+    inputRefs.current = lines.map(() => []);
+  }, [lines]);
+
+  return (
+    <div>
+      <h1>balls lol</h1>
+      {lines.map((line, lineIndex) => (
+        <div key={lineIndex} style={{ marginBottom: "20px" }}>
+          {line.split(" ").map((word, wordIndex) => (
+            <input
+              key={wordIndex}
+              type="text"
+              value={inputs[lineIndex][wordIndex]}
+              onChange={(e) => handleChange(e, lineIndex, wordIndex)}
+              style={{
+                width: `${word.length * 15}px`, // Increase the multiplier for the width calculation
+                margin: "0 5px",
+                textAlign: "left", // Align text to the left
+                border: "none",
+                borderBottom: "2px solid #000", // Add bottom border to simulate underline
+                outline: "none", // Remove outline on focus
+                backgroundColor: "transparent", // Transparent background
+                padding: "2px 0", // Adjust padding for better alignment
+                paddingRight: "5px", // Extra padding to the right for better readability
+              }}
+              maxLength={word.length} // Limit the number of characters to the length of the word
+              ref={(el) => {
+                // Ensure inputRefs.current[lineIndex] is an array before assigning
+                if (!inputRefs.current[lineIndex]) {
+                  inputRefs.current[lineIndex] = [];
+                }
+                inputRefs.current[lineIndex][wordIndex] = el;
+              }}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+};

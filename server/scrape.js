@@ -19,7 +19,8 @@ const Musix = async (url) => {
 
   //Artists
   const artistsContainer = await page.$$(
-    '.css-1rynq56.r-fdjqy7.r-a023e6.r-1kfrs79.r-1cwl3u0.r-lrvibr[dir="auto"]'
+    //'.css-1rynq56.r-fdjqy7.r-a023e6.r-1kfrs79.r-1cwl3u0.r-lrvibr[dir="auto"]'
+    ".css-146c3p1.r-fdjqy7.r-a023e6.r-1kfrs79.r-1cwl3u0.r-lrvibr"
   );
 
   if (artistsContainer.length > 1) {
@@ -36,30 +37,55 @@ const Musix = async (url) => {
 
   //Original Lyrics
   const lyricsContainers = await page.$$(
-    ".css-1rynq56.r-1grxjyw.r-adyw6z.r-11rrj2j.r-13awgt0.r-ueyrd6.r-fdjqy7"
+    ".css-146c3p1.r-1inkyih.r-11rrj2j.r-13awgt0.r-fdjqy7.r-1dxmaum.r-1it3c9n.r-vrz42v"
   );
-
+  //console.log(lyricsContainers);
   for (const line of lyricsContainers) {
     const lines = await page.evaluate((el) => el.textContent, line);
     spanishArray.push(lines.trim());
   }
 
+  const englishLyrics = await page.$$(
+    //".css-146c3p1.r-1inkyih.r-13awgt0.r-1ifxtd0.r-11wrixw.r-fdjqy7.r-1dxmaum.r-1it3c9n.r-vrz42v"
+    ".css-175oi2r.r-eqz5dr.r-1w6e6rj"
+  );
+
+  for (const container of englishLyrics) {
+    console.log(container)
+
+    const text = await page.evaluate((el) => el.innerText, container);
+    // Split by newline and take the second part (English)
+    const parts = text.split("\n");
+
+    if (parts.length > 1) {
+      englishArray.push(parts[1].trim()); // English is after Spanish
+    }
+  }
+
+  //console.log(englishArray);
+
+  /*
   //Enlgish Lyrics
   const englishLyrics = await page.$$(
-    ".css-1rynq56.r-13awgt0.r-adyw6z.r-ueyrd6.r-1ozrv0l.r-fdjqy7"
+    ".css-146c3p1.r-1inkyih.r-13awgt0.r-1ifxtd0.r-11wrixw.r-fdjqy7.r-1dxmaum.r-1it3c9n.r-vrz42v"
   );
+
   for (const lines of englishLyrics) {
+    console.log(lines);
     const line = await page.evaluate((el) => el.textContent, lines);
     englishArray.push(line.trim());
   }
+*/
+
+  // Keeps script running forever
+  //await new Promise(() => {});
 
   await browser.close();
 
+  artistArray.pop();
   if (artistArray.length === 0) {
     artistArray.push("Unknown Artist");
   }
-
-  console.log(spanishArray)
 
   return [artistArray, titleText, spanishArray, englishArray];
 };
@@ -110,20 +136,24 @@ const SearchMusix = async (searchQuery) => {
 
   await page.type('input[type="text"]', searchQuery);
 
-  await page.waitForSelector('.css-175oi2r.r-11c0sde.r-1r5su4o');
-  const firstResultHref = await page.$eval('.css-175oi2r.r-11c0sde.r-1r5su4o', parent => {
-    const firstResultLink = parent.querySelector('.css-175oi2r.r-1otgn73');
-    return firstResultLink ? firstResultLink.getAttribute('href') : null;
-  });
+  await page.waitForSelector(".css-175oi2r.r-11c0sde.r-1r5su4o");
+  const firstResultHref = await page.$eval(
+    ".css-175oi2r.r-11c0sde.r-1r5su4o",
+    (parent) => {
+      const firstResultLink = parent.querySelector(".css-175oi2r.r-1otgn73");
+      return firstResultLink ? firstResultLink.getAttribute("href") : null;
+    }
+  );
 
   // Get the current URL after clicking the first result
-  const newUrl = "https://www.musixmatch.com" + firstResultHref + "/translation/english"
+  const newUrl =
+    "https://www.musixmatch.com" + firstResultHref + "/translation/english";
 
-  await Musix(newUrl)
+  await Musix(newUrl);
 
   await browser.close();
 };
 
-SearchMusix("nueva vida");
+//SearchMusix("nueva vida");
 
 module.exports = Musix;
