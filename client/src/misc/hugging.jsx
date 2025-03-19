@@ -7,7 +7,7 @@ export const Hugging = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const hf = new HfInference(process.env.REACT_APP_HUGGING_FACE_TOKEN || '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');
+      const hf = new HfInference(process.env.REACT_APP_HUGGING_FACE_TOKEN);
       
       try {
         let result = await hf.sentenceSimilarity({
