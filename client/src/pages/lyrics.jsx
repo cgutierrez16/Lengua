@@ -43,7 +43,7 @@ export const Lyrics = () => {
     event.preventDefault();
 
     await axios
-      .get("/lyrics", {
+      .get("/api/lyrics", {
         params: { userInput: userInput },
       })
       .then((res) => {
