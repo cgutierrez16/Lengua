@@ -1,14 +1,22 @@
 const puppeteer = require("puppeteer");
 
+/**
+ * Main function that does new song related functions. Grabs the artist, lyrics, translation, 
+ * and title
+ * 
+ * @param {string} url URL song can be found at
+ * @returns 
+ */
 const Musix = async (url) => {
   const artistArray = [];
   const spanishArray = [];
   const englishArray = [];
   const browser = await puppeteer.launch({
     defaultViewport: false,
+    headless: false,
   });
   const page = await browser.newPage();
-  await page.goto(url);
+  await page.goto(url, { waitUntil: "networkidle2" });
 
   //Title
   const titleContainer = await page.$('h1[dir="auto"]');
@@ -37,22 +45,22 @@ const Musix = async (url) => {
 
   //Original Lyrics
   const lyricsContainers = await page.$$(
-    ".css-146c3p1.r-1inkyih.r-11rrj2j.r-13awgt0.r-fdjqy7.r-1dxmaum.r-1it3c9n.r-vrz42v"
+    ".css-146c3p1.r-1inkyih.r-11rrj2j.r-13awgt0.r-fdjqy7.r-1dxmaum.r-1it3c9n.r-135wba7"
   );
-  //console.log(lyricsContainers);
+
   for (const line of lyricsContainers) {
     const lines = await page.evaluate((el) => el.textContent, line);
     spanishArray.push(lines.trim());
   }
 
+  /*
   const englishLyrics = await page.$$(
-    //".css-146c3p1.r-1inkyih.r-13awgt0.r-1ifxtd0.r-11wrixw.r-fdjqy7.r-1dxmaum.r-1it3c9n.r-vrz42v"
+    //".css-146c3p1.r-1inkyih.r-13awgt0.r-1ifxtd0.r-11wrixw.r-fdjqy7.r-1dxmaum.r-1it3c9n.r-135wba7"
+    //.css-175oi2r.r-eqz5dr.r-1w6e6rj
     ".css-175oi2r.r-eqz5dr.r-1w6e6rj"
   );
 
   for (const container of englishLyrics) {
-    console.log(container)
-
     const text = await page.evaluate((el) => el.innerText, container);
     // Split by newline and take the second part (English)
     const parts = text.split("\n");
@@ -60,20 +68,6 @@ const Musix = async (url) => {
     if (parts.length > 1) {
       englishArray.push(parts[1].trim()); // English is after Spanish
     }
-  }
-
-  //console.log(englishArray);
-
-  /*
-  //Enlgish Lyrics
-  const englishLyrics = await page.$$(
-    ".css-146c3p1.r-1inkyih.r-13awgt0.r-1ifxtd0.r-11wrixw.r-fdjqy7.r-1dxmaum.r-1it3c9n.r-vrz42v"
-  );
-
-  for (const lines of englishLyrics) {
-    console.log(lines);
-    const line = await page.evaluate((el) => el.textContent, lines);
-    englishArray.push(line.trim());
   }
 */
 
@@ -87,11 +81,24 @@ const Musix = async (url) => {
     artistArray.push("Unknown Artist");
   }
 
+  englishTranslations = await Translate(spanishArray);
+
+  for (const line of englishTranslations) {
+    englishArray.push(line.trim());
+  }
+
   return [artistArray, titleText, spanishArray, englishArray];
 };
 
+
+/**
+ * Takes an array in spanish and translates each line into english
+ * 
+ * @param {array} lyricsArray Array of lyrics in spanish that will be translated to english
+ * @returns 
+ */
 const Translate = async (lyricsArray) => {
-  const translatedLyrics = [];
+  let translatedLyrics = [];
   const browser = await puppeteer.launch({
     headless: false,
     defaultViewport: false,
@@ -104,8 +111,17 @@ const Translate = async (lyricsArray) => {
     var inputBox = await page.$('[aria-label="Source text"]');
     await inputBox.type(lyric);
 
-    // Wait for the translation to appear
-    await page.waitForSelector('span[jsname="W297wb"]');
+    // Wait for the translation to update
+    await page.waitForFunction(
+      (prevTranslation) => {
+        const outputElement = document.querySelector('span[jsname="W297wb"]');
+        return outputElement && outputElement.textContent !== prevTranslation;
+      },
+      {}, // Options
+      translatedLyrics.length > 0
+        ? translatedLyrics[translatedLyrics.length - 1]
+        : "" // Previous translation
+    );
 
     // Get the translated text
     const outputBox = await page.$('span[jsname="W297wb"]');
@@ -116,16 +132,21 @@ const Translate = async (lyricsArray) => {
     translatedLyrics.push(translatedText);
 
     // Clear the input box for the next iteration
-    await page.$eval(
-      '[aria-label="Source text"]',
-      (input) => (input.value = "")
-    );
+    await inputBox.click({ clickCount: 3 }); // Select all text
+    await page.keyboard.press("Backspace"); // Delete text
   }
-  console.log(translatedLyrics);
 
   await browser.close();
+
+  return translatedLyrics;
 };
 
+
+/**
+ * Takes a string that user inputs and finds that song on MusixMatch to prepare for scraping
+ * 
+ * @param {string} searchQuery User input search query
+ */
 const SearchMusix = async (searchQuery) => {
   const browser = await puppeteer.launch({
     headless: false,

@@ -26,7 +26,7 @@ export const Lyrics = () => {
    */
   const addLyrics = async () => {
     axios
-      .post("/lyrics")
+      .post("/api/lyrics")
       .then((res) => {
         console.log(res.data);
       })

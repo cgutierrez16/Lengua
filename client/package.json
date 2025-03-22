@@ -2,20 +2,18 @@
   "name": "spanish",
   "version": "0.1.0",
   "private": true,
-  "options": {
-    "allowedHosts": ["localhost", ".localhost"],
-    "proxy": "https://localhost:3001/"
-  },
   "dependencies": {
-    "@craco/craco": "^7.1.0",
+    "@craco/craco": "^5.9.0",
     "@fortawesome/fontawesome-free": "^6.5.2",
     "@huggingface/inference": "^2.8.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@xenova/transformers": "^2.17.2",
+    "ajv": "^8.17.1",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
+    "braces": "^3.0.3",
     "fs": "^0.0.1-security",
     "http-proxy-middleware": "^3.0.0",
     "os-browserify": "^0.3.0",
@@ -26,7 +24,7 @@
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^6.22.3",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
