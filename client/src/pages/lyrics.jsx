@@ -12,10 +12,6 @@ export const Lyrics = () => {
   const lyricRefs = useRef([]); // Store refs for lyrics
 
   useEffect(() => {
-    console.log("Translation updated:", translation);
-  }, [translation]);
-
-  useEffect(() => {
     // Measure the height of each lyric after render
     const heights = lyricRefs.current.map((ref) => ref?.offsetHeight || 0);
     console.log("Lyric Heights:", heights);
@@ -47,7 +43,7 @@ export const Lyrics = () => {
         params: { userInput: userInput },
       })
       .then((res) => {
-        console.log(res.data.rows[0]);
+        //console.log(res.data.rows[0]);
         setArtist(res.data.rows[0].artist);
         setTitle(res.data.rows[0].title);
         setFormattedTitle(res.data.rows[0].formattitle);
