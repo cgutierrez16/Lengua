@@ -66,7 +66,7 @@ export const LyricTypingInput = ({ lines, lyricRefs }) => {
         return (
           <div
             key={lineIndex}
-            className="input-lyrics-align test"
+            className="input-lyrics-align"
             style={{
               marginTop: `${Math.max(0, lineHeights[lineIndex] - 48) + (lineHeights[lineIndex] > 48 ? 10 : 0)}px`,
               marginBottom: "10px",            

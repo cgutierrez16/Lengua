@@ -1,11 +1,11 @@
 const puppeteer = require("puppeteer");
 
 /**
- * Main function that does new song related functions. Grabs the artist, lyrics, translation, 
+ * Main function that does new song related functions. Grabs the artist, lyrics, translation,
  * and title
- * 
+ *
  * @param {string} url URL song can be found at
- * @returns 
+ * @returns
  */
 const Musix = async (url) => {
   const artistArray = [];
@@ -25,9 +25,20 @@ const Musix = async (url) => {
     titleContainer
   );
 
+  ///Album Title
+  const albumTitleContainer = await page.$('h2[data-testid="lyrics-track-description"]');
+  const albumNameText = await page.evaluate(
+    (el) => el.textContent.split("•"),
+    albumTitleContainer
+  );
+
+
+  ///Album Cover Image Link
+  const albumCoverContainer = await page.$$(".css-9pa8cd");
+  const imageLink = await page.evaluate((el) => el.src, albumCoverContainer[1])
+
   //Artists
   const artistsContainer = await page.$$(
-    //'.css-1rynq56.r-fdjqy7.r-a023e6.r-1kfrs79.r-1cwl3u0.r-lrvibr[dir="auto"]'
     ".css-146c3p1.r-fdjqy7.r-a023e6.r-1kfrs79.r-1cwl3u0.r-lrvibr"
   );
 
@@ -87,15 +98,14 @@ const Musix = async (url) => {
     englishArray.push(line.trim());
   }
 
-  return [artistArray, titleText, spanishArray, englishArray];
+  return [artistArray, titleText, spanishArray, englishArray, albumNameText[0], imageLink];
 };
-
 
 /**
  * Takes an array in spanish and translates each line into english
- * 
+ *
  * @param {array} lyricsArray Array of lyrics in spanish that will be translated to english
- * @returns 
+ * @returns
  */
 const Translate = async (lyricsArray) => {
   let translatedLyrics = [];
@@ -141,10 +151,9 @@ const Translate = async (lyricsArray) => {
   return translatedLyrics;
 };
 
-
 /**
  * Takes a string that user inputs and finds that song on MusixMatch to prepare for scraping
- * 
+ *
  * @param {string} searchQuery User input search query
  */
 const SearchMusix = async (searchQuery) => {

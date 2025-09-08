@@ -3,7 +3,7 @@ import { Hugging } from '../misc/hugging'
 
 export const Freewrite = () => {
   return (
-    <div>
+    <div className="base">
       <Hugging />
     </div>
   );

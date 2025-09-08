@@ -8,6 +8,8 @@ export const Lyrics = () => {
   const [title, setTitle] = useState();
   const [formattedTitle, setFormattedTitle] = useState();
   const [artist, setArtist] = useState([]);
+  const [albumTitle, setAlbumTitle] = useState();
+  const [albumCoverLink, setAlbumCoverLink] = useState();
   const [userInput, setUserInput] = useState();
   const lyricRefs = useRef([]); // Store refs for lyrics
 
@@ -43,13 +45,14 @@ export const Lyrics = () => {
         params: { userInput: userInput },
       })
       .then((res) => {
-        //console.log(res.data.rows[0]);
+        console.log(res.data.rows[0]);
         setArtist(res.data.rows[0].artist);
         setTitle(res.data.rows[0].title);
         setFormattedTitle(res.data.rows[0].formattitle);
         setLyrics(res.data.rows[0].lyrics);
         setTranslation(res.data.rows[0].translation);
-        console.log(title);
+        setAlbumTitle(res.data.rows[0].albumtitle);
+        setAlbumCoverLink(res.data.rows[0].albumcoverlink);
       })
       .catch((err) => {
         console.error("Error:", err); // Handle errors
@@ -67,7 +70,7 @@ export const Lyrics = () => {
   };
 
   return (
-    <div>
+    <div className="base">
       <div className="container pb-5 mb-5">
         <div className="row justify-content-center mt-5">
           <div className="col-sm-6">
@@ -100,13 +103,14 @@ export const Lyrics = () => {
               <div className="col-sm-8 d-flex justify-content-evenly ">
                 <div className="col-sm-4 ms-5 ps-5">
                   <img
-                    src={`/song-covers/${formattedTitle}.jpg`}
+                    src={albumCoverLink}
                     alt="album cover"
                     className="album-cover"
                   />
                 </div>
                 <div className="col-sm-5 text-start pt-2">
                   {title ? <h1>{title}</h1> : <h1>Search for song name</h1>}
+                  {albumTitle ? <h3>{albumTitle}</h3> : <h3> </h3>}
                   {artist.length > 0 ? (
                     <div
                       className="text-truncate"
@@ -135,14 +139,14 @@ export const Lyrics = () => {
                 className="col-sm-6 text-start ps-3"
                 style={{
                   fontSize: "22px",
-                  borderRight: "solid 2px #5ae4a7",                  
+                  borderRight: "solid 2px #5ae4a7",
                 }}
               >
                 {lyrics.length > 0 ? (
                   lyrics.map((line, index) => (
                     <p
                       key={index}
-                      className="lyrics-align test"
+                      className="lyrics-align"
                       ref={(el) => (lyricRefs.current[index] = el)} // Store ref for measurement
                     >
                       {line}
@@ -156,7 +160,12 @@ export const Lyrics = () => {
                 className="col-sm-6 text-start ps-3"
                 style={{ fontSize: "22px" }}
               >
-                <LyricTypingInput lines={translation} lyricRefs={lyricRefs}/>
+                <LyricTypingInput lines={translation} lyricRefs={lyricRefs} />
+              </div>
+              <div className="mt-5">
+                <button className="translation-submit">
+                  Check Translation!
+                </button>
               </div>
             </div>
           </div>

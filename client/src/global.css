@@ -22,7 +22,8 @@
 
 /* Colors */
 .base {
-  background-color: #fbf7f4;
+  /*background-color: #fbf7f4;*/
+  background-color: #FFFFF0;
 }
 
 .primary {
@@ -116,9 +117,9 @@ nav {
   background: linear-gradient(
     to right,
     #97ecc3 43%,
-    #fbf7f4 30%,
-    #fbf7f4 70%,
-    #fbf7f4 70%
+    #FFFFF0 30%,
+    #FFFFF0 70%,
+    #FFFFF0 70%
   );
 }
 
@@ -147,7 +148,7 @@ nav {
 
 #lyric-search-input {
   height: 60px;
-  background-color: #4abb8851;
+  background-color: #4aba8851;
 }
 
 #lyric-search-button {
@@ -177,4 +178,18 @@ nav {
   margin-bottom: 0; /* Remove spacing inconsistencies */
   display: flex;
   align-items: center; /* Ensure vertical alignment */
+}
+
+.translation-submit {
+  width: 350px;
+  height: 75px;
+  border-radius: 20px;
+  border: solid black 2px;
+  font-size: x-large;
+  letter-spacing: 1.5px;
+  background-color: #4aba8851;
+}
+
+.translation-submit:hover {
+  background-color: #4aba88;
 }

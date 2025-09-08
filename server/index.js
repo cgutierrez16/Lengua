@@ -30,9 +30,9 @@ app.get("/lyrics", async (req, res) => {
 
 app.post("/lyrics", async (req, res) => {
   try {
-    const [artist, title, spanishLyrics, englishLyrics] = await Musix("https://www.musixmatch.com/lyrics/Bad-Bunny/TURiSTA/translation/english");
+    const [artist, title, spanishLyrics, englishLyrics, albumName, imageLink] = await Musix("https://www.musixmatch.com/lyrics/Eslabon-Armado/Donde-Has-Estado/translation/english");
     const formattedTitle = FormatTitle(title)
-    pool.query("INSERT INTO songs (title, artist, lyrics, formattitle, translation) VALUES($1, $2, $3, $4, $5)", [title, artist, spanishLyrics, formattedTitle, englishLyrics])
+    pool.query("INSERT INTO songs (title, artist, lyrics, formattitle, translation, albumtitle, albumcoverlink) VALUES($1, $2, $3, $4, $5, $6, $7)", [title, artist, spanishLyrics, formattedTitle, englishLyrics, albumName, imageLink])
     res.send("Post request success");
   } catch (error) {
     console.error(error);

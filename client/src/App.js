@@ -14,7 +14,7 @@ function App() {
   return (
     <div className="App montserrat base">
       <Helmet>
-        <style>{"body { background-color: #FBF7F4; }"}</style>
+        <style>{"body { background-color: #FFFFF0; }"}</style>
       </Helmet>
       <Router>
         <Navbar />
