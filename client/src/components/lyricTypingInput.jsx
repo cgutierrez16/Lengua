@@ -87,6 +87,7 @@ export const LyricTypingInput = ({ lines, lyricRefs }) => {
                 paddingRight: "5px",
               }}
               maxLength={wordCount * 6} // Roughly 6 characters per word
+              className="userTranslationInput"
             />
           </div>
         );

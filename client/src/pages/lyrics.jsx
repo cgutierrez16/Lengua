@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { LyricTypingInput } from "../components/lyricTypingInput";
+import { Hugging } from "../misc/hugging";
+import { use } from "react";
 
 export const Lyrics = () => {
   const [lyrics, setLyrics] = useState([]);
@@ -11,6 +13,8 @@ export const Lyrics = () => {
   const [albumTitle, setAlbumTitle] = useState();
   const [albumCoverLink, setAlbumCoverLink] = useState();
   const [userInput, setUserInput] = useState();
+  const [showHugging, setShowHugging] = useState(false);
+  const [userTranslation, setUserTranslation] = useState([]);
   const lyricRefs = useRef([]); // Store refs for lyrics
 
   useEffect(() => {
@@ -67,6 +71,18 @@ export const Lyrics = () => {
    */
   const handleChange = (event) => {
     setUserInput(event.target.value);
+  };
+
+  const handleUserInput = async () => {
+    const userInputLines = document.getElementsByClassName(
+      "userTranslationInput"
+    );
+    const userInputArray = Array.from(userInputLines).map(
+      (input) => input.value
+    );
+    setUserTranslation(userInputArray);
+
+    setShowHugging(true);
   };
 
   return (
@@ -163,10 +179,14 @@ export const Lyrics = () => {
                 <LyricTypingInput lines={translation} lyricRefs={lyricRefs} />
               </div>
               <div className="mt-5">
-                <button className="translation-submit">
+                <button
+                  className="translation-submit"
+                  onClick={handleUserInput}
+                >
                   Check Translation!
                 </button>
               </div>
+              {showHugging ? <Hugging userTranslation={userTranslation} realTranslation={translation}/> : null}
             </div>
           </div>
         ) : (
