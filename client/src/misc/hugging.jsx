@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-export const Hugging = ({userTranslation, realTranslation}) => {
+export const Hugging = ({ userTranslation, realTranslation }) => {
   const [sentenceSimilarityRes, setSentenceSimilarityRes] = useState(null);
   const [loading, setLoading] = useState(true);
   const [clicked, setClicked] = useState(false);
 
-  
   const checkTranslation = async () => {
     setLoading(true);
     setClicked(true);
@@ -32,8 +31,7 @@ export const Hugging = ({userTranslation, realTranslation}) => {
       setLoading(false);
     }
   };
-  
- 
+
   useEffect(() => {
     checkTranslation();
   }, []);

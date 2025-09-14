@@ -2,7 +2,7 @@ import React from 'react'
 
 export const About = () => {
   return (
-    <div classname="base">
+    <div className="base">
         <h1>something cool</h1>
     </div>
   )

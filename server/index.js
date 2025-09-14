@@ -56,11 +56,10 @@ app.post("/lyrics", async (req, res) => {
   }
 });
 
-// Hugging Face API route
 app.post("/api/huggingface", async (req, res) => {
   try {
     const { model, inputs } = req.body.text;
-
+    console.log(inputs)
     const response = await axios.post(
       `https://api-inference.huggingface.co/models/${model}`,
       { inputs },
@@ -78,6 +77,16 @@ app.post("/api/huggingface", async (req, res) => {
     res.status(500).json({ error: "Hugging Face request failed" });
   }
 });
+
+
+/*
+const cosineSim = (v1, v2) => {
+      const dot = v1.reduce((sum, val, i) => sum + val * v2[i], 0);
+      const mag1 = Math.sqrt(v1.reduce((sum, val) => sum + val * val, 0));
+      const mag2 = Math.sqrt(v2.reduce((sum, val) => sum + val * val, 0));
+      return dot / (mag1 * mag2);
+    };
+*/
 
 // CONNECTS NODE ROUTING WITH REACT ROUTER DOM. FIXES ISSUE WHERE A REFRESH
 // WOULD BREAK THE SITE IF BOTH REACT DEV SERVER AND BACKEND SERVER WERE

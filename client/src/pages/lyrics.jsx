@@ -20,7 +20,7 @@ export const Lyrics = () => {
   useEffect(() => {
     // Measure the height of each lyric after render
     const heights = lyricRefs.current.map((ref) => ref?.offsetHeight || 0);
-    console.log("Lyric Heights:", heights);
+    //console.log("Lyric Heights:", heights);
   }, [lyrics]);
 
   /**
@@ -49,7 +49,7 @@ export const Lyrics = () => {
         params: { userInput: userInput },
       })
       .then((res) => {
-        console.log(res.data.rows[0]);
+        //console.log(res.data.rows[0]);
         setArtist(res.data.rows[0].artist);
         setTitle(res.data.rows[0].title);
         setFormattedTitle(res.data.rows[0].formattitle);
@@ -91,18 +91,18 @@ export const Lyrics = () => {
         <div className="row justify-content-center mt-5">
           <div className="col-sm-6">
             <form onChange={handleChange} onSubmit={handleSubmit}>
-              <div class="input-group input-group-lg">
-                <span class="input-group-text" id="inputGroup-sizing-lg">
+              <div className="input-group input-group-lg">
+                <span className="input-group-text" id="inputGroup-sizing-lg">
                   <button id="lyric-search-button">
-                    <i class="fa fa-search"></i>
+                    <i className="fa fa-search"></i>
                   </button>
                 </span>
                 <input
                   type="text"
-                  class="form-control"
+                  className="form-control"
                   aria-label="Sizing example input"
                   aria-describedby="inputGroup-sizing-lg"
-                  autocomplete="off"
+                  autoComplete="off"
                   placeholder="Search..."
                   value={userInput}
                   id="lyric-search-input"
