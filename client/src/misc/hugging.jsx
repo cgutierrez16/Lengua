@@ -10,20 +10,12 @@ export const Hugging = ({ userTranslation, realTranslation }) => {
     setLoading(true);
     setClicked(true);
     try {
-      const response = await axios.post(
-        "http://localhost:3001/api/huggingface",
-        {
-          text: {
-            model: "sentence-transformers/paraphrase-xlm-r-multilingual-v1",
-            inputs: {
-              source_sentence: realTranslation,
-              sentences: userTranslation,
-            },
-          },
-        }
-      );
+      const response = await axios.post("http://localhost:3001/api/compare", {
+        arr1: realTranslation,
+        arr2: userTranslation,
+      });
 
-      const result = response.data;
+      const result = response.data.scores;
       setSentenceSimilarityRes(result);
     } catch (error) {
       console.error("Error fetching sentence similarity:", error);

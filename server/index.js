@@ -83,10 +83,14 @@ app.post("/api/compare", async (req, res) => {
   try {
     const { arr1, arr2 } = req.body;
 
-    const response = await axios.post("http://localhost:5000/similarity", {
-      arr1,
-      arr2,
-    });
+    const response = await axios.post(
+      "http://127.0.0.1:5000/similarity",
+      {
+        arr1,
+        arr2,
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
 
     res.json(response.data);
   } catch (err) {

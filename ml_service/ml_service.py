@@ -12,18 +12,18 @@ model = SentenceTransformer("sentence-transformers/paraphrase-xlm-r-multilingual
 @app.route("/similarity", methods=["POST"])
 def similarity():
     data = request.get_json()
-    arr1 = data.get("arr1", [])
-    arr2 = data.get("arr2", [])
+    realTranslation = data.get("arr1", [])
+    userTranslation = data.get("arr2", [])
 
-    if len(arr1) != len(arr2):
+    if len(realTranslation) != len(userTranslation):
         return jsonify({"error": "Arrays must have the same length"}), 400
 
-    embeddings1 = model.encode(arr1, convert_to_tensor=True)
-    embeddings2 = model.encode(arr2, convert_to_tensor=True)
+    embeddings1 = model.encode(realTranslation, convert_to_tensor=True)
+    embeddings2 = model.encode(userTranslation, convert_to_tensor=True)
 
     similarities = [
         util.cos_sim(embeddings1[i], embeddings2[i]).item()
-        for i in range(len(arr1))
+        for i in range(len(realTranslation))
     ]
 
     return jsonify({"scores": similarities})
