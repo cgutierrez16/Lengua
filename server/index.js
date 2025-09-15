@@ -59,7 +59,7 @@ app.post("/lyrics", async (req, res) => {
 app.post("/api/huggingface", async (req, res) => {
   try {
     const { model, inputs } = req.body.text;
-    console.log(inputs)
+    console.log(inputs);
     const response = await axios.post(
       `https://api-inference.huggingface.co/models/${model}`,
       { inputs },
@@ -78,6 +78,22 @@ app.post("/api/huggingface", async (req, res) => {
   }
 });
 
+// Route to compare two arrays using the Python ML service
+app.post("/api/compare", async (req, res) => {
+  try {
+    const { arr1, arr2 } = req.body;
+
+    const response = await axios.post("http://localhost:5000/similarity", {
+      arr1,
+      arr2,
+    });
+
+    res.json(response.data);
+  } catch (err) {
+    console.error("Error calling Python service:", err.message);
+    res.status(500).json({ error: "Failed to compute similarity" });
+  }
+});
 
 /*
 const cosineSim = (v1, v2) => {
