@@ -1,0 +1,168 @@
+/* ── General ── */
+.home-page {
+  background-color: #fffff0;
+}
+
+/* ── Hero ── */
+.hero {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 3rem 2rem;
+}
+
+.hero-text {
+  text-align: left;
+  padding-left: 2rem;
+}
+
+.hero-title {
+  font-family: "Nothing You Could Do", cursive;
+  font-weight: 400;
+  text-decoration: none;
+  color: black;
+  font-size: 80px;
+  padding-top: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 40px;
+  color: #838383;
+  margin-top: 1rem;
+}
+
+.hero-tagline {
+  font-size: 35px;
+  color: #838383;
+  margin-top: 0.5rem;
+}
+
+.hero-image-wrapper {
+  text-align: center;
+}
+
+.hero-image {
+  width: 500px;
+  height: auto;
+}
+
+/* ── Features ── */
+.features {
+  padding: 3rem 2rem;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.features-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.features-title {
+  font-family: "Nothing You Could Do", cursive;
+  font-weight: 400;
+  text-decoration: none;
+  color: black;
+  font-size: 60px;
+}
+
+.features-subtitle {
+  color: #838383;
+  margin-top: 1rem;
+  font-size: 1.25rem;
+}
+
+.feature-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  border-radius: 15px;
+  background-color: #21a9b55f;
+}
+
+.feature-card-text {
+  flex: 1;
+  padding: 0 2rem;
+  text-align: left;
+}
+
+.feature-card-text h1 {
+  margin-bottom: 1rem;
+  padding-top: 2rem;
+}
+
+.feature-card-text p {
+  font-size: 17px;
+}
+
+.feature-card-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.features-img {
+  width: auto;
+  height: 300px;
+}
+
+/* ── About ── */
+.about {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  padding: 3rem 2rem;
+  margin: 2rem 0 6rem 0;
+  background: linear-gradient(
+    to right,
+    #97ecc3 43%,
+    #fffff0 30%,
+    #fffff0 70%,
+    #fffff0 70%
+  );
+}
+
+.about-headline {
+  text-align: right;
+  margin: auto 0;
+}
+
+.about-headline h1 {
+  font-size: 50px;
+  font-weight: 500;
+  letter-spacing: 2px;
+}
+
+.about-text {
+  max-width: 550px;
+  text-align: left;
+}
+
+.about-text p {
+  font-size: 18px;
+}
+
+.about-welcome {
+  font-size: 20px !important;
+  margin-top: 1rem;
+}
+
+/* ── Button ── */
+.home-btn {
+  width: 200px;
+  height: 65px;
+  font-size: 25px;
+  letter-spacing: 2px;
+  border-radius: 15px;
+  color: black;
+  background-color: #5ae4a7;
+  border: none;
+  cursor: pointer;
+  margin-top: 1.5rem;
+}
+
+.home-btn:hover {
+  background-color: #4abb88;
+}

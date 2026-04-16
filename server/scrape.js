@@ -1,189 +1,92 @@
-const puppeteer = require("puppeteer");
+require("dotenv").config();
 
-/**
- * Main function that does new song related functions. Grabs the artist, lyrics, translation,
- * and title
- *
- * @param {string} url URL song can be found at
- * @returns
- */
-const Musix = async (url) => {
-  const artistArray = [];
-  const spanishArray = [];
-  const englishArray = [];
-  const browser = await puppeteer.launch({
-    defaultViewport: false,
-    headless: false,
-  });
-  const page = await browser.newPage();
-  await page.goto(url, { waitUntil: "networkidle2" });
-
-  //Title
-  const titleContainer = await page.$('h1[dir="auto"]');
-  const titleText = await page.evaluate(
-    (el) => el.textContent.trim(),
-    titleContainer
+const fetchLyrics = async (searchQuery) => {
+  const searchRes = await fetch(
+    `https://lrclib.net/api/search?q=${encodeURIComponent(searchQuery)}`,
+    { headers: { "User-Agent": "Lengua/1.0" } },
   );
+  const results = await searchRes.json();
 
-  ///Album Title
-  const albumTitleContainer = await page.$('h2[data-testid="lyrics-track-description"]');
-  const albumNameText = await page.evaluate(
-    (el) => el.textContent.split("•"),
-    albumTitleContainer
-  );
-
-
-  ///Album Cover Image Link
-  const albumCoverContainer = await page.$$(".css-9pa8cd");
-  const imageLink = await page.evaluate((el) => el.src, albumCoverContainer[1])
-
-  //Artists
-  const artistsContainer = await page.$$(
-    ".css-146c3p1.r-fdjqy7.r-a023e6.r-1kfrs79.r-1cwl3u0.r-lrvibr"
-  );
-
-  if (artistsContainer.length > 1) {
-    var count = 0;
-    var len = artistsContainer.length;
-    for (const artist of artistsContainer) {
-      count++;
-      if (count >= 3 && count < len - 2) {
-        const art = await page.evaluate((el) => el.textContent, artist);
-        artistArray.push(art.trim());
-      }
-    }
+  if (!results || results.length === 0) {
+    throw new Error("Song not found on LRCLIB");
   }
 
-  //Original Lyrics
-  const lyricsContainers = await page.$$(
-    ".css-146c3p1.r-1inkyih.r-11rrj2j.r-13awgt0.r-fdjqy7.r-1dxmaum.r-1it3c9n.r-135wba7"
-  );
+  const song = findBestMatch(results, searchQuery);
+  const title = song.trackName;
+  const artist = [song.artistName];
+  const albumName = song.albumName;
+  const plainLyrics = song.plainLyrics;
 
-  for (const line of lyricsContainers) {
-    const lines = await page.evaluate((el) => el.textContent, line);
-    spanishArray.push(lines.trim());
+  if (!plainLyrics) {
+    throw new Error("No lyrics found for this song");
   }
 
-  /*
-  const englishLyrics = await page.$$(
-    //".css-146c3p1.r-1inkyih.r-13awgt0.r-1ifxtd0.r-11wrixw.r-fdjqy7.r-1dxmaum.r-1it3c9n.r-135wba7"
-    //.css-175oi2r.r-eqz5dr.r-1w6e6rj
-    ".css-175oi2r.r-eqz5dr.r-1w6e6rj"
-  );
+  const spanishArray = plainLyrics
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
 
-  for (const container of englishLyrics) {
-    const text = await page.evaluate((el) => el.innerText, container);
-    // Split by newline and take the second part (English)
-    const parts = text.split("\n");
+  const englishArray = await Translate(spanishArray);
 
-    if (parts.length > 1) {
-      englishArray.push(parts[1].trim()); // English is after Spanish
-    }
-  }
-*/
+  // Use LRCLIB's artist + title to query iTunes for a consistent match
+  const imageLink = await getAlbumArt(song.artistName, song.trackName);
 
-  // Keeps script running forever
-  //await new Promise(() => {});
-
-  await browser.close();
-
-  artistArray.pop();
-  if (artistArray.length === 0) {
-    artistArray.push("Unknown Artist");
-  }
-
-  englishTranslations = await Translate(spanishArray);
-
-  for (const line of englishTranslations) {
-    englishArray.push(line.trim());
-  }
-
-  return [artistArray, titleText, spanishArray, englishArray, albumNameText[0], imageLink];
+  return [artist, title, spanishArray, englishArray, albumName, imageLink];
 };
 
-/**
- * Takes an array in spanish and translates each line into english
- *
- * @param {array} lyricsArray Array of lyrics in spanish that will be translated to english
- * @returns
- */
+const deepl = require("deepl-node");
+
+const translator = new deepl.Translator(process.env.DEEPL_API_KEY);
+
 const Translate = async (lyricsArray) => {
-  let translatedLyrics = [];
-  const browser = await puppeteer.launch({
-    headless: false,
-    defaultViewport: false,
-  });
-  const page = await browser.newPage();
-  await page.goto("https://translate.google.com/?sl=es&tl=en&op=translate");
+  const translatedLyrics = [];
 
   for (const lyric of lyricsArray) {
-    // Type each line of lyric into the input box
-    var inputBox = await page.$('[aria-label="Source text"]');
-    await inputBox.type(lyric);
-
-    // Wait for the translation to update
-    await page.waitForFunction(
-      (prevTranslation) => {
-        const outputElement = document.querySelector('span[jsname="W297wb"]');
-        return outputElement && outputElement.textContent !== prevTranslation;
-      },
-      {}, // Options
-      translatedLyrics.length > 0
-        ? translatedLyrics[translatedLyrics.length - 1]
-        : "" // Previous translation
-    );
-
-    // Get the translated text
-    const outputBox = await page.$('span[jsname="W297wb"]');
-    const translatedText = await page.evaluate(
-      (span) => span.textContent,
-      outputBox
-    );
-    translatedLyrics.push(translatedText);
-
-    // Clear the input box for the next iteration
-    await inputBox.click({ clickCount: 3 }); // Select all text
-    await page.keyboard.press("Backspace"); // Delete text
+    const result = await translator.translateText(lyric, "es", "en-US");
+    translatedLyrics.push(result.text);
   }
-
-  await browser.close();
 
   return translatedLyrics;
 };
 
-/**
- * Takes a string that user inputs and finds that song on MusixMatch to prepare for scraping
- *
- * @param {string} searchQuery User input search query
- */
-const SearchMusix = async (searchQuery) => {
-  const browser = await puppeteer.launch({
-    headless: false,
-    defaultViewport: false,
-  });
-  const page = await browser.newPage();
-  await page.goto("https://www.musixmatch.com/search");
-
-  await page.type('input[type="text"]', searchQuery);
-
-  await page.waitForSelector(".css-175oi2r.r-11c0sde.r-1r5su4o");
-  const firstResultHref = await page.$eval(
-    ".css-175oi2r.r-11c0sde.r-1r5su4o",
-    (parent) => {
-      const firstResultLink = parent.querySelector(".css-175oi2r.r-1otgn73");
-      return firstResultLink ? firstResultLink.getAttribute("href") : null;
+const getAlbumArt = async (artist, title) => {
+  try {
+    const query = encodeURIComponent(`${artist} ${title}`);
+    const res = await fetch(
+      `https://itunes.apple.com/search?term=${query}&media=music&entity=song&limit=1`,
+    );
+    const data = await res.json();
+    if (data.results && data.results.length > 0) {
+      // artworkUrl100 is 100x100, replace with 600x600 for better quality
+      return data.results[0].artworkUrl100.replace("100x100bb", "600x600bb");
     }
-  );
-
-  // Get the current URL after clicking the first result
-  const newUrl =
-    "https://www.musixmatch.com" + firstResultHref + "/translation/english";
-
-  await Musix(newUrl);
-
-  await browser.close();
+    return null;
+  } catch (err) {
+    console.error("Failed to fetch album art:", err);
+    return null;
+  }
 };
 
-//SearchMusix("nueva vida");
+const findBestMatch = (results, searchQuery) => {
+  const query = searchQuery.toLowerCase();
 
-module.exports = Musix;
+  // If only one result, use it
+  if (results.length === 1) return results[0];
+
+  // Try to find a result where the artist name appears in the search query
+  const artistMatch = results.find(
+    (r) => r.artistName && query.includes(r.artistName.toLowerCase()),
+  );
+  if (artistMatch) return artistMatch;
+
+  // Try to find a result where the track name appears in the search query
+  const titleMatch = results.find(
+    (r) => r.trackName && query.includes(r.trackName.toLowerCase()),
+  );
+  if (titleMatch) return titleMatch;
+
+  // Fall back to first result
+  return results[0];
+};
+
+module.exports = fetchLyrics;

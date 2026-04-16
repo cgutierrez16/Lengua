@@ -1,0 +1,335 @@
+.lyrics-page {
+  padding-bottom: 5rem;
+  margin-bottom: 5rem;
+  width: 70%;
+  margin: 0 auto;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.search-form {
+  display: flex;
+  align-items: flex-end;
+  width: 60%;
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 60px;
+  background-color: #4aba8851;
+  border-radius: 8px;
+  padding: 0 1rem;
+}
+
+.search-input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 18px;
+}
+
+#lyric-search-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  margin: 0 1rem;
+  width: auto;
+}
+
+/* Song Info */
+.song-info-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.song-info-inner {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.album-cover {
+  width: 175px;
+  height: 175px;
+  border-radius: 10px;
+}
+
+.song-details {
+  text-align: left;
+  padding-top: 0.5rem;
+}
+
+.song-title {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.album-title {
+  font-size: 1.5rem;
+  margin: 0.25rem 0;
+}
+
+.artist-name {
+  font-size: 1.5rem;
+  color: grey;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+/* Lyrics Section */
+.lyrics-section {
+  border: solid 1px black;
+  border-radius: 10px;
+  margin-top: 3rem;
+  padding: 2rem;
+}
+
+.lyric-row {
+  display: flex;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.lyric-text {
+  flex: 1;
+  text-align: left;
+  padding-left: 0.75rem;
+  border-right: solid 2px #5ae4a7;
+  margin: 0;
+  line-height: 2;
+}
+
+.lyric-input-wrapper {
+  flex: 1;
+  padding-left: 0.75rem;
+}
+
+.userTranslationInput {
+  width: 100%;
+  resize: none;
+  overflow: hidden;
+  border: none;
+  border-bottom: 2px solid #000;
+  outline: none;
+  background-color: transparent;
+  padding: 2px 0;
+  font-size: 22px;
+  font-family: inherit;
+  line-height: 2;
+}
+
+/* Submit Button */
+.submit-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.translation-submit {
+  width: 350px;
+  height: 75px;
+  border-radius: 20px;
+  border: solid black 2px;
+  font-size: x-large;
+  letter-spacing: 1.5px;
+  background-color: #4aba8851;
+  cursor: pointer;
+}
+
+.translation-submit:hover {
+  background-color: #4aba88;
+}
+
+/* No song selected */
+.no-song {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+/* ── Results ── */
+.results-section {
+  margin-top: 2rem;
+}
+
+.overall-score-card {
+  display: flex;
+  align-items: center;
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  gap: 2rem;
+  background-color: transparent;
+}
+
+.overall-score-left {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.overall-score-label {
+  font-size: 16px;
+  color: #838383;
+  margin-bottom: 4px;
+}
+
+.overall-score-number {
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.overall-score-message {
+  font-size: 16px;
+  color: #838383;
+  margin-top: 4px;
+}
+
+.score-color-green {
+  color: #3ab24a;
+}
+.score-color-yellow {
+  color: #b27a0a;
+}
+.score-color-red {
+  color: #c0392b;
+}
+
+.overall-score-bar-wrap {
+  flex: 1;
+}
+
+.overall-score-bar-bg {
+  height: 10px;
+  background: #e0e0e0;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.overall-score-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+.fill-green {
+  background-color: #5ae4a7;
+}
+.fill-yellow {
+  background-color: #f0a500;
+}
+.fill-red {
+  background-color: #e74c3c;
+}
+
+.try-again-btn {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid black;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.try-again-btn:hover {
+  background-color: #5ae4a7;
+}
+
+.results-table {
+  border: 1px solid black;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: transparent;
+}
+
+.results-table-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid black;
+  padding: 0.6rem 0;
+  background-color: transparent;
+}
+
+.results-col-header {
+  font-size: 16px;
+  color: #838383;
+  font-weight: 400;
+  padding: 0 0.75rem;
+}
+
+.results-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 0.5px solid #ccc;
+  align-items: start;
+}
+
+.results-row:last-child {
+  border-bottom: none;
+}
+
+.results-cell {
+  padding: 0.75rem;
+  font-size: 22px;
+  line-height: 1.5;
+}
+
+.results-spanish {
+  color: #838383;
+  font-style: italic;
+  border-right: 0.5px solid #ccc;
+}
+
+.results-correct {
+  color: #838383;
+  border-right: 0.5px solid #ccc;
+}
+
+.results-user {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.score-pill {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 2px 10px;
+  border-radius: 99px;
+  width: fit-content;
+}
+
+.pill-green {
+  background: #d4f5e5;
+  color: #0f6e56;
+}
+.pill-yellow {
+  background: #faeeda;
+  color: #854f0b;
+}
+.pill-red {
+  background: #fde8e8;
+  color: #a32d2d;
+}
+
+.search-message {
+  text-align: center;
+  margin-top: 0.75rem;
+  color: #838383;
+  font-size: 16px;
+}

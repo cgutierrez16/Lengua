@@ -1,6 +1,7 @@
 {
   "name": "spanish",
   "version": "0.1.0",
+  "proxy": "http://localhost:3001",
   "private": true,
   "dependencies": {
     "@craco/craco": "^5.9.0",

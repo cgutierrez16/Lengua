@@ -3,7 +3,7 @@ const path = require("path");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
-const Musix = require("./scrape");
+const fetchLyrics = require("./scrape");
 const FormatTitle = require("./helperFunctions");
 const axios = require("axios"); // for Hugging Face API requests
 //const fetch = require("node-fetch"); // for Hugging Face API requests
@@ -15,46 +15,58 @@ app.use(express.json());
 
 // ROUTES
 
-app.get("/lyrics", async (req, res) => {
+app.get("/api/lyrics", async (req, res) => {
+  console.log("HIT /api/lyrics", req.query);
   try {
     const userInput = req.query.userInput;
     const formattedUserInput = FormatTitle(userInput);
-    //console.log("Input recieved: " + formattedUserInput)
 
     const song = await pool.query(
       "SELECT * FROM songs WHERE formattitle = $1",
-      [formattedUserInput]
+      [formattedUserInput],
     );
-    res.send(song);
-  } catch (err) {
-    console.error(err);
-  }
-});
 
-app.post("/lyrics", async (req, res) => {
-  try {
-    const [artist, title, spanishLyrics, englishLyrics, albumName, imageLink] =
-      await Musix(
-        "https://www.musixmatch.com/lyrics/Eslabon-Armado/Donde-Has-Estado/translation/english"
-      );
-    const formattedTitle = FormatTitle(title);
-    pool.query(
-      "INSERT INTO songs (title, artist, lyrics, formattitle, translation, albumtitle, albumcoverlink) VALUES($1, $2, $3, $4, $5, $6, $7)",
-      [
-        title,
+    if (song.rows.length > 0) {
+      // Song found in DB, return it
+      res.send(song);
+    } else {
+      // Song not found, scrape it
+      const [
         artist,
+        title,
         spanishLyrics,
-        formattedTitle,
         englishLyrics,
         albumName,
         imageLink,
-      ]
-    );
-    res.send("Post request success");
-  } catch (error) {
-    console.error(error);
+      ] = await fetchLyrics(userInput);
+      const formattedTitle = FormatTitle(title);
+
+      await pool.query(
+        "INSERT INTO songs (title, artist, lyrics, formattitle, translation, albumtitle, albumcoverlink) VALUES($1, $2, $3, $4, $5, $6, $7)",
+        [
+          title,
+          artist,
+          spanishLyrics,
+          formattedTitle,
+          englishLyrics,
+          albumName,
+          imageLink,
+        ],
+      );
+
+      // Fetch and return the newly inserted song
+      const newSong = await pool.query(
+        "SELECT * FROM songs WHERE formattitle = $1",
+        [formattedTitle],
+      );
+      res.send(newSong);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch or scrape song" });
   }
 });
+
 
 app.post("/api/huggingface", async (req, res) => {
   try {
@@ -68,7 +80,7 @@ app.post("/api/huggingface", async (req, res) => {
           Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}`,
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     res.json(response.data);
@@ -89,7 +101,7 @@ app.post("/api/compare", async (req, res) => {
         arr1,
         arr2,
       },
-      { headers: { "Content-Type": "application/json" } }
+      { headers: { "Content-Type": "application/json" } },
     );
 
     res.json(response.data);
@@ -98,31 +110,6 @@ app.post("/api/compare", async (req, res) => {
     res.status(500).json({ error: "Failed to compute similarity" });
   }
 });
-
-/*
-const cosineSim = (v1, v2) => {
-      const dot = v1.reduce((sum, val, i) => sum + val * v2[i], 0);
-      const mag1 = Math.sqrt(v1.reduce((sum, val) => sum + val * val, 0));
-      const mag2 = Math.sqrt(v2.reduce((sum, val) => sum + val * val, 0));
-      return dot / (mag1 * mag2);
-    };
-*/
-
-// CONNECTS NODE ROUTING WITH REACT ROUTER DOM. FIXES ISSUE WHERE A REFRESH
-// WOULD BREAK THE SITE IF BOTH REACT DEV SERVER AND BACKEND SERVER WERE
-// RUNNING AT THE SAME TIME
-
-// Serve static files from the React app
-// Route all requests to React's index.html. React-router-dom will handle
-// all of the routing with regards to navigating the pages
-
-/*
-app.use(express.static(path.join(__dirname, "../client/build")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
-});
-*/
 
 // LISTEN
 

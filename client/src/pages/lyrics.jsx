@@ -1,198 +1,245 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { LyricTypingInput } from "../components/lyricTypingInput";
-import { Hugging } from "../misc/hugging";
-import { use } from "react";
+import "../styles/lyrics.css";
 
 export const Lyrics = () => {
   const [lyrics, setLyrics] = useState([]);
   const [translation, setTranslation] = useState([]);
   const [title, setTitle] = useState();
-  const [formattedTitle, setFormattedTitle] = useState();
   const [artist, setArtist] = useState([]);
   const [albumTitle, setAlbumTitle] = useState();
   const [albumCoverLink, setAlbumCoverLink] = useState();
-  const [userInput, setUserInput] = useState();
-  const [showHugging, setShowHugging] = useState(false);
+  const [userInput, setUserInput] = useState("");
   const [userTranslation, setUserTranslation] = useState([]);
-  const lyricRefs = useRef([]); // Store refs for lyrics
+  const [scores, setScores] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+  const [loadingScores, setLoadingScores] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [searchMessage, setSearchMessage] = useState("");
 
-  useEffect(() => {
-    // Measure the height of each lyric after render
-    const heights = lyricRefs.current.map((ref) => ref?.offsetHeight || 0);
-    //console.log("Lyric Heights:", heights);
-  }, [lyrics]);
-
-  /**
-   * Function used to add a song to database if it does not exist
-   */
-  const addLyrics = async () => {
-    axios
-      .post("/api/lyrics")
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
-
-  /**
-   * Handles the search query from user. Strips all white space and toLowerCase the userInput state. Then makes a request to /lyrics route and returns the song
-   * @param {event} event The event of a submission being recognized
-   */
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setSearching(true);
+    setSearchMessage("Searching...");
 
     await axios
-      .get("/api/lyrics", {
-        params: { userInput: userInput },
-      })
+      .get("http://localhost:3001/api/lyrics", { params: { userInput } })
       .then((res) => {
-        //console.log(res.data.rows[0]);
-        setArtist(res.data.rows[0].artist);
-        setTitle(res.data.rows[0].title);
-        setFormattedTitle(res.data.rows[0].formattitle);
-        setLyrics(res.data.rows[0].lyrics);
-        setTranslation(res.data.rows[0].translation);
-        setAlbumTitle(res.data.rows[0].albumtitle);
-        setAlbumCoverLink(res.data.rows[0].albumcoverlink);
+        if (!res.data.rows || res.data.rows.length === 0) {
+          setSearchMessage("Song not found.");
+          return;
+        }
+        const song = res.data.rows[0];
+        setArtist(song.artist);
+        setTitle(song.title);
+        setLyrics(song.lyrics);
+        setTranslation(song.translation);
+        setAlbumTitle(song.albumtitle);
+        setAlbumCoverLink(song.albumcoverlink);
+        setShowResults(false);
+        setScores([]);
+        setSearchMessage("");
       })
       .catch((err) => {
-        console.error("Error:", err); // Handle errors
+        console.error("Error:", err);
+        setSearchMessage("Something went wrong. Please try again.");
       });
 
+    setSearching(false);
     setUserInput("");
   };
 
-  /**
-   * Any time changes are made to form box (i.e. A single letter being typed) this function will    trigger and update the userInput React state accordingly. Binded to the onChange attribute of form tag
-   * @param {event} event  The event of changes being made to the form text box
-   */
   const handleChange = (event) => {
     setUserInput(event.target.value);
   };
 
-  const handleUserInput = async () => {
+  const handleCheckTranslation = async () => {
     const userInputLines = document.getElementsByClassName(
-      "userTranslationInput"
+      "userTranslationInput",
     );
     const userInputArray = Array.from(userInputLines).map(
-      (input) => input.value
+      (input) => input.value,
     );
     setUserTranslation(userInputArray);
+    setLoadingScores(true);
 
-    setShowHugging(true);
+    try {
+      const response = await axios.post("http://localhost:3001/api/compare", {
+        arr1: translation,
+        arr2: userInputArray,
+      });
+
+      const adjustedScores = response.data.scores.map((score, index) =>
+        userInputArray[index].trim() === "" ? 0 : score,
+      );
+
+      setScores(adjustedScores);
+      setShowResults(true);
+    } catch (err) {
+      console.error("Error fetching scores:", err);
+    } finally {
+      setLoadingScores(false);
+    }
+  };
+
+  const handleTryAgain = () => {
+    setShowResults(false);
+    setScores([]);
+    setUserTranslation([]);
+  };
+
+  const getScoreLevel = (score) => {
+    const pct = score * 100;
+    if (pct >= 80) return "green";
+    if (pct >= 55) return "yellow";
+    return "red";
+  };
+
+  const overallScore = scores.length
+    ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100)
+    : 0;
+
+  const getOverallMessage = (score) => {
+    if (score >= 80) return "Great work — you really know this song!";
+    if (score >= 55) return "Pretty good — a few lines to work on.";
+    return "Keep practicing — you'll get there!";
   };
 
   return (
-    <div className="base">
-      <div className="container pb-5 mb-5">
-        <div className="row justify-content-center mt-5">
-          <div className="col-sm-6">
-            <form onChange={handleChange} onSubmit={handleSubmit}>
-              <div className="input-group input-group-lg">
-                <span className="input-group-text" id="inputGroup-sizing-lg">
-                  <button id="lyric-search-button">
-                    <i className="fa fa-search"></i>
-                  </button>
-                </span>
-                <input
-                  type="text"
-                  className="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="inputGroup-sizing-lg"
-                  autoComplete="off"
-                  placeholder="Search..."
-                  value={userInput}
-                  id="lyric-search-input"
-                />
-              </div>
-            </form>
-            <button onClick={addLyrics}>Add Lyrics to Database</button>
+    <div className="lyrics-page">
+      <div className="search-container">
+        <form
+          className="search-form"
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        >
+          <div className="search-input-wrapper">
+            <button type="submit" id="lyric-search-button">
+              <i className="fa fa-search"></i>
+            </button>
+            <input
+              type="text"
+              className="search-input"
+              autoComplete="off"
+              placeholder="Search..."
+              value={userInput}
+            />
           </div>
-        </div>
+        </form>
+        {searchMessage && <p className="search-message">{searchMessage}</p>}
+      </div>
 
-        {title ? (
-          <div>
-            <div className="row mt-5 justify-content-center">
-              <div className="col-sm-8 d-flex justify-content-evenly ">
-                <div className="col-sm-4 ms-5 ps-5">
-                  <img
-                    src={albumCoverLink}
-                    alt="album cover"
-                    className="album-cover"
-                  />
-                </div>
-                <div className="col-sm-5 text-start pt-2">
-                  {title ? <h1>{title}</h1> : <h1>Search for song name</h1>}
-                  {albumTitle ? <h3>{albumTitle}</h3> : <h3> </h3>}
-                  {artist.length > 0 ? (
-                    <div
-                      className="text-truncate"
-                      style={{
-                        maxWidth: "100%",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      <h2
-                        className="grey"
-                        style={{ display: "inline", fontSize: "1.50rem" }}
-                      >
-                        {artist.join(", ")}
-                      </h2>
-                    </div>
-                  ) : (
-                    <h2> </h2>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="row justify-content-evenly mt-5 py-5 lyrics-border">
-              <div
-                className="col-sm-6 text-start ps-3"
-                style={{
-                  fontSize: "22px",
-                  borderRight: "solid 2px #5ae4a7",
-                }}
-              >
-                {lyrics.length > 0 ? (
-                  lyrics.map((line, index) => (
-                    <p
-                      key={index}
-                      className="lyrics-align"
-                      ref={(el) => (lyricRefs.current[index] = el)} // Store ref for measurement
-                    >
-                      {line}
-                    </p>
-                  ))
-                ) : (
-                  <p> </p>
+      {title ? (
+        <div>
+          <div className="song-info-container">
+            <div className="song-info-inner">
+              <img
+                src={albumCoverLink}
+                alt="album cover"
+                className="album-cover"
+              />
+              <div className="song-details">
+                <h1 className="song-title">{title}</h1>
+                <h3 className="album-title">{albumTitle}</h3>
+                {artist.length > 0 && (
+                  <h2 className="artist-name">{artist.join(", ")}</h2>
                 )}
               </div>
-              <div
-                className="col-sm-6 text-start ps-3"
-                style={{ fontSize: "22px" }}
-              >
-                <LyricTypingInput lines={translation} lyricRefs={lyricRefs} />
-              </div>
-              <div className="mt-5">
-                <button
-                  className="translation-submit"
-                  onClick={handleUserInput}
-                >
-                  Check Translation!
-                </button>
-              </div>
-              {showHugging ? <Hugging userTranslation={userTranslation} realTranslation={translation}/> : null}
             </div>
           </div>
-        ) : (
-          <h1>No song selected</h1>
-        )}
-      </div>
+
+          {!showResults ? (
+            <div className="lyrics-section">
+              {lyrics.map((line, index) => (
+                <div key={index} className="lyric-row">
+                  <p className="lyric-text">{line}</p>
+                  <div className="lyric-input-wrapper">
+                    <textarea
+                      rows={1}
+                      className="userTranslationInput"
+                      onChange={(e) => {
+                        e.target.style.height = "auto";
+                        e.target.style.height = e.target.scrollHeight + "px";
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+              <div className="submit-container">
+                <button
+                  className="translation-submit"
+                  onClick={handleCheckTranslation}
+                  disabled={loadingScores}
+                >
+                  {loadingScores ? "Checking..." : "Check Translation"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="results-section">
+              {/* Overall score card */}
+              <div className="overall-score-card">
+                <div className="overall-score-left">
+                  <span className="overall-score-label">Overall score</span>
+                  <span
+                    className={`overall-score-number score-color-${getScoreLevel(overallScore / 100)}`}
+                  >
+                    {overallScore}%
+                  </span>
+                  <span className="overall-score-message">
+                    {getOverallMessage(overallScore)}
+                  </span>
+                </div>
+                <div className="overall-score-bar-wrap">
+                  <div className="overall-score-bar-bg">
+                    <div
+                      className={`overall-score-bar-fill fill-${getScoreLevel(overallScore / 100)}`}
+                      style={{ width: `${overallScore}%` }}
+                    />
+                  </div>
+                </div>
+                <button className="try-again-btn" onClick={handleTryAgain}>
+                  Try again
+                </button>
+              </div>
+
+              {/* Results table */}
+              <div className="results-table">
+                <div className="results-table-header">
+                  <span className="results-col-header">Spanish</span>
+                  <span className="results-col-header">
+                    Correct translation
+                  </span>
+                  <span className="results-col-header">Your translation</span>
+                </div>
+                {lyrics.map((line, index) => {
+                  const score = scores[index] ?? 0;
+                  const pct = Math.round(score * 100);
+                  const level = getScoreLevel(score);
+                  return (
+                    <div key={index} className="results-row">
+                      <span className="results-cell results-spanish">
+                        {line}
+                      </span>
+                      <span className="results-cell results-correct">
+                        {translation[index]}
+                      </span>
+                      <span className="results-cell results-user">
+                        <span>{userTranslation[index]}</span>
+                        <span className={`score-pill pill-${level}`}>
+                          {pct}%
+                        </span>
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <h1 className="no-song">No song selected</h1>
+      )}
     </div>
   );
 };

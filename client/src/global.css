@@ -81,52 +81,8 @@ nav {
   font-weight: bold;
 }
 
-.home-btn {
-  width: 200px;
-  height: 65px;
-  font-size: 25px;
-  letter-spacing: 2px;
-  border-radius: 15px;
-  color: black;
-}
-
-.home-btn:hover {
-  background-color: #4abb88;
-}
-
 .cheat {
   border: solid 0.1px #7c91bc;
-}
-
-.hero-image {
-  width: 500px;
-  height: auto;
-}
-
-.features-img {
-  width: auto;
-  height: 300px;
-}
-
-.features-card {
-  background-color: #21a9b55f;
-  border-radius: 15px;
-}
-
-.rectangle {
-  background: linear-gradient(
-    to right,
-    #97ecc3 43%,
-    #FFFFF0 30%,
-    #FFFFF0 70%,
-    #FFFFF0 70%
-  );
-}
-
-.mission-headline {
-  font-size: 50px;
-  font-weight: 500;
-  letter-spacing: 2px;
 }
 
 .primary-card {

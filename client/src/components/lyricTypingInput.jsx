@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 export const LyricTypingInput = ({ lines, lyricRefs }) => {
-  const [lineHeights, setLineHeights] = useState([]);
-  const inputRefs = useRef([]);
+  const textareaRefs = useRef([]);
 
   const tempArray = [
     "You have no idea",
@@ -17,77 +16,49 @@ export const LyricTypingInput = ({ lines, lyricRefs }) => {
     lines = tempArray;
   }
 
-  // Initialize state to store user inputs
-  const [inputs, setInputs] = useState(
-    lines.map((line) => line.split(" ").map(() => ""))
-  );
-
-
-  const handleChange = (e, lineIndex, wordIndex) => {
-    const { value } = e.target;
-    const newInputs = inputs.map((line, li) =>
-      line.map((word, wi) => {
-        if (li === lineIndex && wi === wordIndex) {
-          return value;
-        }
-        return word;
-      })
-    );
-    setInputs(newInputs);
-
-    // Move to next input if current input is full
-    if (value.length >= e.target.maxLength) {
-      const nextInput = inputRefs.current[lineIndex]?.[wordIndex + 1];
-      if (nextInput) {
-        nextInput.focus();
-      }
-    }
+  const autoResize = (el) => {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
   };
 
-  
-  // Initialize inputRefs.current as a 2D array
   useEffect(() => {
-    inputRefs.current = lines.map(() => []);
+    textareaRefs.current.forEach((el) => autoResize(el));
   }, [lines]);
 
-  useEffect(() => {
-    if (lyricRefs.current) {
-      const heights = lyricRefs.current.map((ref) => ref?.offsetHeight || 0);
-      setLineHeights(heights);
-    }
-  }, [lyricRefs]);
-
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       {lines.map((line, lineIndex) => {
-        const wordCount = lines[lineIndex]?.split(" ").length || 3; // Fallback to 3 words
-        const inputWidth = `${wordCount * 4.25}rem`; // Adjust multiplier as needed
+        const lyricEl = lyricRefs.current?.[lineIndex];
+        const lyricTop = lyricEl ? lyricEl.offsetTop : null;
 
         return (
           <div
             key={lineIndex}
-            className="input-lyrics-align"
             style={{
-              marginTop: `${Math.max(0, lineHeights[lineIndex] - 48) + (lineHeights[lineIndex] > 48 ? 10 : 0)}px`,
-              marginBottom: "10px",            
+              position: lyricTop !== null ? "absolute" : "relative",
+              top: lyricTop !== null ? lyricTop : undefined,
+              width: "100%",
             }}
           >
-            <input
-              type="text"
-              key={lineIndex}
+            <textarea
+              ref={(el) => (textareaRefs.current[lineIndex] = el)}
+              rows={1}
+              className="userTranslationInput"
+              onChange={(e) => autoResize(e.target)}
               style={{
-                width: inputWidth,
-                margin: "0 5px",
-                textAlign: "left",
+                width: "100%",
+                resize: "none",
+                overflow: "hidden",
                 border: "none",
                 borderBottom: "2px solid #000",
                 outline: "none",
                 backgroundColor: "transparent",
                 padding: "2px 0",
-                paddingRight: "5px",
+                fontSize: "22px",
+                fontFamily: "inherit",
+                lineHeight: "2.0",
               }}
-              maxLength={wordCount * 6} // Roughly 6 characters per word
-              className="userTranslationInput"
             />
           </div>
         );
