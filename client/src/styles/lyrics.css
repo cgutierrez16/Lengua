@@ -274,8 +274,8 @@
 .results-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  border-bottom: 0.5px solid #ccc;
-  align-items: start;
+  border-bottom: 0.5px solid #eee;
+  align-items: stretch;
 }
 
 .results-row:last-child {
@@ -292,11 +292,13 @@
   color: #838383;
   font-style: italic;
   border-right: 0.5px solid #ccc;
+  align-self: stretch;
 }
 
 .results-correct {
   color: #838383;
   border-right: 0.5px solid #ccc;
+  align-self: stretch;
 }
 
 .results-user {
@@ -332,4 +334,49 @@
   margin-top: 0.75rem;
   color: #838383;
   font-size: 16px;
+}
+
+/* ── Word hints ── */
+.word-hint-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.underlined-word {
+  text-decoration: underline;
+  text-decoration-color: #ff1900;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.word-hint-card {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 1rem;
+  min-width: 220px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.word-hint-wrapper:hover .word-hint-card {
+  display: block;
+}
+
+.hint-word {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 4px 0;
+}
+
+.hint-definition {
+  font-size: 15px;
+  color: #838383;
+  margin: 0 0 12px 0;
 }

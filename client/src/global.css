@@ -23,7 +23,7 @@
 /* Colors */
 .base {
   /*background-color: #fbf7f4;*/
-  background-color: #FFFFF0;
+  background-color: #fffff0;
 }
 
 .primary {
@@ -71,7 +71,12 @@ nav {
 .nav-links li a {
   text-decoration: none;
   color: rgb(0, 0, 0);
-  font-size: 40px;
+  font-size: 25px;
+}
+
+.nav-links li a:hover {
+  color: #038e50;
+  text-decoration: underline;
 }
 
 .logo {
@@ -123,7 +128,7 @@ nav {
 }
 
 .lyrics-align {
-  line-height: 2.00;
+  line-height: 2;
   margin-bottom: 10px; /* Remove spacing inconsistencies */
   display: flex;
   align-items: center; /* Ensure vertical alignment */

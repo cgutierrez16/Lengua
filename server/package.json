@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.90.0",
     "axios": "^1.11.0",
     "cors": "^2.8.5",
     "deepl-node": "^1.26.0",
@@ -19,6 +20,7 @@
     "node-fetch": "^3.3.2",
     "nodemon": "^3.1.0",
     "pg": "^8.11.5",
-    "puppeteer": "^22.6.5"
+    "puppeteer": "^22.6.5",
+    "spanish-verbs": "^3.4.0"
   }
 }

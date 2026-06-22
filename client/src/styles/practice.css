@@ -1,0 +1,32 @@
+.results-practice-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1rem;
+  justify-content: flex-end;
+}
+
+.toggle-btn {
+  padding: 0.4rem 1.25rem;
+  border: 1px solid black;
+  border-radius: 99px;
+  background: transparent;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.toggle-btn:disabled {
+  color: #838383;
+  border-color: #ccc;
+  cursor: default;
+}
+
+.toggle-active {
+  background: #5ae4a7;
+  border-color: #5ae4a7;
+}
+
+.practice-empty {
+  text-align: center;
+  padding: 3rem 0;
+  color: #838383;
+}

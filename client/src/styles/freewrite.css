@@ -1,0 +1,307 @@
+.freewrite-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+/* ── Prompt ── */
+.fw-prompt-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.fw-section-label {
+  font-size: 16px;
+  color: #838383;
+  font-weight: 400;
+  margin: 0;
+  align-self: flex-start;
+}
+
+.fw-prompt-card {
+  width: 100%;
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.fw-prompt-text {
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.fw-reveal-btn {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  color: #838383;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.fw-prompt-translation {
+  font-size: 18px;
+  color: #838383;
+  margin: 0;
+  font-style: italic;
+}
+
+.fw-time-options {
+  display: flex;
+  gap: 1rem;
+}
+
+.fw-time-btn {
+  padding: 0.6rem 1.5rem;
+  border: 1px solid black;
+  border-radius: 99px;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.fw-time-selected {
+  background: #5ae4a7;
+  border-color: #5ae4a7;
+}
+
+/* ── Editor ── */
+.fw-editor-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.fw-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+}
+
+.fw-prompt-reminder {
+  font-size: 18px;
+  color: #838383;
+  font-style: italic;
+  margin: 0;
+}
+
+.fw-timer {
+  font-size: 32px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.fw-timer-low {
+  color: #e74c3c;
+}
+
+.fw-textarea {
+  width: 100%;
+  min-height: 300px;
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 1.5rem;
+  font-size: 18px;
+  font-family: inherit;
+  line-height: 1.8;
+  resize: none;
+  outline: none;
+  background: transparent;
+}
+
+.fw-word-count {
+  font-size: 14px;
+  color: #838383;
+  text-align: right;
+  margin: 0;
+}
+
+/* ── Feedback ── */
+.fw-feedback-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.fw-loading {
+  text-align: center;
+  color: #838383;
+  font-size: 18px;
+  padding: 4rem 0;
+}
+
+.fw-prompt-reminder-bar {
+  font-size: 16px;
+  color: #838383;
+  font-style: italic;
+}
+
+.fw-prompt-label {
+  font-weight: 500;
+  font-style: normal;
+  color: black;
+}
+
+.fw-scores {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+}
+
+.fw-score-card {
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fw-score-label {
+  font-size: 13px;
+  color: #838383;
+}
+
+.fw-score-number {
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.fw-score-bar-bg {
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 4px 0;
+}
+
+.fw-score-bar-fill {
+  height: 100%;
+  background: #5ae4a7;
+  border-radius: 99px;
+}
+
+.fw-score-feedback {
+  font-size: 13px;
+  color: #838383;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.fw-word-count-card {
+  justify-content: center;
+}
+
+/* ── Text review ── */
+.fw-text-review {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fw-review-label {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.fw-review-hint {
+  font-size: 13px;
+  color: #838383;
+  margin: 0;
+}
+
+.fw-text-box {
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.fw-user-text {
+  font-size: 18px;
+  line-height: 1.8;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.fw-flagged-word {
+  position: relative;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: #e74c3c;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.fw-flag-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  min-width: 220px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.fw-tooltip-suggestion {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0 0 4px 0;
+  color: #0f6e56;
+}
+
+.fw-tooltip-reason {
+  font-size: 13px;
+  color: #838383;
+  margin: 0;
+}
+
+/* ── Action buttons ── */
+.fw-action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.fw-action-btn {
+  padding: 0.75rem 2rem;
+  border: 1px solid black;
+  border-radius: 99px;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.fw-action-btn:hover {
+  background: #f5f5f5;
+}
+
+.fw-action-primary {
+  background: #5ae4a7;
+  border-color: #5ae4a7;
+}
+
+.fw-action-primary:hover {
+  background: #4abb88;
+}
+
+.fw-prompt-actions {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
