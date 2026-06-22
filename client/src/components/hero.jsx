@@ -1,5 +1,6 @@
 import React from "react";
 import image from "../images/green-tree.png";
+import { Link } from "react-router-dom";
 
 export const Hero = () => {
   return (
@@ -13,8 +14,12 @@ export const Hero = () => {
             <h2 className="mt-3 grey" style={{ fontSize: "40px" }}>
               Learn like never before!
             </h2>
-            <h2 style={{ fontSize: "35px" }} className="grey mt-2">Spanish that sticks</h2>        
-            <button className="home-btn primary mt-4">Learn More</button>
+            <h2 style={{ fontSize: "35px" }} className="grey mt-2">
+              Spanish that sticks
+            </h2>
+            <Link to="/about">
+              <button className="home-btn primary mt-4">Learn More</button>
+            </Link>
           </div>
           <div className="col-sm-5 text-center">
             <img src={image} alt="Tree" className="hero-image" />

@@ -10,14 +10,16 @@ export const About = () => {
             <h1 className="mission-headline">For Students.</h1>
           </div>
           <div className="col-sm-6">
-            <p className="text-start" style={{ fontSize: "20px" }}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo illo
-              aliquam saepe rerum a inventore natus corrupti recusandae eum est
-              culpa consectetur temporibus at obcaecati voluptatem corporis
-              ratione, nulla libero. Lorem ipsum dolor sit, amet consectetur
-              adipisicing elit. Optio voluptatem, explicabo eveniet vero, ea
-              nesciunt totam fugit ratione numquam iusto omnis laborum tempore
-              necessitatibus repellat libero iure cumque blanditiis cupiditate.
+            <p className="text-start" style={{ fontSize: "18px" }}>
+              Today, learning a new langauge can feel generic and mundane.
+              Everyone learns differently, and with most lanugage learning apps
+              using the same cookie cutter formula, one student decided to
+              create his own solution. Driven by the desire to inspire learners
+              and offer them a new avenue for growth, Lengua was born - a
+              refreshing alternative to the greyscale language learning space.
+            </p>
+            <p className="text-start pt-1" style={{ fontSize: "20px" }}>
+              Welcome to a new era. Welcome, to Lengua
             </p>
           </div>
         </div>

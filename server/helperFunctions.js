@@ -7,4 +7,8 @@ function FormatTitle(title) {
     return temp2
 }
 
+function gradeTranslation(userTranslation, correctTranslation) {
+    
+}
+
 module.exports = FormatTitle

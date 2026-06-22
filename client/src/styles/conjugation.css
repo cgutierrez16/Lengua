@@ -1,0 +1,39 @@
+.conjugation-table {
+  font-size: 13px;
+}
+
+.conjugation-tense-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tense-tab {
+  padding: 2px 10px;
+  border: 1px solid #ccc;
+  border-radius: 99px;
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tense-tab.active {
+  background: #5ae4a7;
+  border-color: #5ae4a7;
+}
+
+.conjugation-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.person-cell {
+  color: #838383;
+  padding: 2px 8px 2px 0;
+  white-space: nowrap;
+}
+
+.conjugation-cell {
+  font-weight: 500;
+  padding: 2px 0;
+}

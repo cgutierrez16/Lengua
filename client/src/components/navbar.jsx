@@ -5,11 +5,11 @@ export const Navbar = () => {
   return (
     <nav className="base">
       <div>
-        <Link to="/" class="logo ps-4 primary-font underline">
+        <Link to="/" className="logo ps-4 primary-font underline">
           Lengua
         </Link>
       </div>
-      <ul class="nav-links montserrat">
+      <ul className="nav-links montserrat">
         <li>
           <Link to="/">Home</Link>
         </li>
