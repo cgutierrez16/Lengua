@@ -7,6 +7,7 @@ const fetchLyrics = require("./scrape");
 const FormatTitle = require("./helperFunctions");
 const Anthropic = require("@anthropic-ai/sdk");
 const SpanishVerbs = require("spanish-verbs");
+const SearchAndScrape = require("./scrape");
 const axios = require("axios"); // for Hugging Face API requests
 //const fetch = require("node-fetch"); // for Hugging Face API requests
 require("dotenv").config(); // load .env variables
@@ -18,48 +19,32 @@ app.use(express.json());
 // ROUTES
 
 app.get("/api/lyrics", async (req, res) => {
-  console.log("HIT /api/lyrics", req.query);
   try {
     const userInput = req.query.userInput;
     const formattedUserInput = FormatTitle(userInput);
 
     const song = await pool.query(
       "SELECT * FROM songs WHERE formattitle = $1",
-      [formattedUserInput],
+      [formattedUserInput]
     );
 
     if (song.rows.length > 0) {
-      // Song found in DB, return it
       res.send(song);
     } else {
-      // Song not found, scrape it
-      const [
-        artist,
-        title,
-        spanishLyrics,
-        englishLyrics,
-        albumName,
-        imageLink,
-      ] = await fetchLyrics(userInput);
+      const [artist, title, spanishLyrics, englishLyrics, albumName, imageLink] =
+        await SearchAndScrape(userInput);
       const formattedTitle = FormatTitle(title);
 
       await pool.query(
-        "INSERT INTO songs (title, artist, lyrics, formattitle, translation, albumtitle, albumcoverlink) VALUES($1, $2, $3, $4, $5, $6, $7)",
-        [
-          title,
-          artist,
-          spanishLyrics,
-          formattedTitle,
-          englishLyrics,
-          albumName,
-          imageLink,
-        ],
+        `INSERT INTO songs (title, artist, lyrics, formattitle, translation, albumtitle, albumcoverlink) 
+         VALUES($1, $2, $3, $4, $5, $6, $7)
+         ON CONFLICT (formattitle) DO NOTHING`,
+        [title, artist, spanishLyrics, formattedTitle, englishLyrics, albumName, imageLink]
       );
 
-      // Fetch and return the newly inserted song
       const newSong = await pool.query(
         "SELECT * FROM songs WHERE formattitle = $1",
-        [formattedTitle],
+        [formattedTitle]
       );
       res.send(newSong);
     }

@@ -18,7 +18,7 @@
     "dotenv": "^17.2.2",
     "express": "^4.19.2",
     "node-fetch": "^3.3.2",
-    "nodemon": "^3.1.0",
+    "nodemon": "^3.1.14",
     "pg": "^8.11.5",
     "puppeteer": "^22.6.5",
     "spanish-verbs": "^3.4.0"

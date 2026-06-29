@@ -1,4 +1,6 @@
 require("dotenv").config();
+const Anthropic = require("@anthropic-ai/sdk");
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const fetchLyrics = async (searchQuery) => {
   const searchRes = await fetch(
@@ -39,14 +41,30 @@ const deepl = require("deepl-node");
 const translator = new deepl.Translator(process.env.DEEPL_API_KEY);
 
 const Translate = async (lyricsArray) => {
-  const translatedLyrics = [];
+  const numberedLines = lyricsArray
+    .map((line, i) => `${i}: ${line}`)
+    .join("\n");
 
-  for (const lyric of lyricsArray) {
-    const result = await translator.translateText(lyric, "es", "en-US");
-    translatedLyrics.push(result.text);
-  }
+  const message = await anthropic.messages.create({
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 4096,
+    messages: [
+      {
+        role: "user",
+        content: `Translate these Spanish song lyrics to natural, idiomatic English. Consider the full context of the song when translating each line, including slang, idioms, and ambiguous phrasing.
 
-  return translatedLyrics;
+${numberedLines}
+
+Return ONLY a valid JSON array of strings, one per line, in the same order and same number of lines as the input. No markdown, no explanation, just the JSON array.`,
+      },
+    ],
+  });
+
+  const text = message.content[0].text;
+  const clean = text.replace(/```json|```/g, "").trim();
+  const translations = JSON.parse(clean);
+
+  return translations;
 };
 
 const getAlbumArt = async (artist, title) => {

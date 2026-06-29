@@ -1,7 +1,16 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
 export const Navbar = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
+
   return (
     <nav className="base">
       <div>
@@ -19,7 +28,18 @@ export const Navbar = () => {
         <li>
           <Link to="/write">Free Write</Link>
         </li>
+        {user ? (
+          <li>
+            <button onClick={handleLogout} className="navbar-logout-btn">
+              Log out
+            </button>
+          </li>
+        ) : (
+          <li>
+            <Link to="/login">Log in</Link>
+          </li>
+        )}
       </ul>
     </nav>
-  )
-}
+  );
+};

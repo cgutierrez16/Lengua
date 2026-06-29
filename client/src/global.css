@@ -79,6 +79,19 @@ nav {
   text-decoration: underline;
 }
 
+.navbar-logout-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  font-family: "Montserrat", sans-serif;
+  cursor: pointer;
+  color: black;
+}
+
+.navbar-logout-btn:hover {
+  color: #5ae4a7;
+}
+
 .logo {
   text-decoration: none;
   color: rgb(0, 0, 0);
