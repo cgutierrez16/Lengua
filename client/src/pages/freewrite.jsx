@@ -3,9 +3,12 @@ import axios from "axios";
 import FreeWritePrompt from "../components/freeWritePrompt";
 import FreeWriteEditor from "../components/freeWriteEditor";
 import FreeWriteFeedback from "../components/freeWriteFeedback";
+import { useAuth } from "../AuthContext";
+import { supabase } from "../supabaseClient";
 import "../styles/freewrite.css";
 
 export const Freewrite = () => {
+  const { user } = useAuth();
   const [prompt, setPrompt] = useState(null);
   const [phase, setPhase] = useState("prompt");
   const [selectedTime, setSelectedTime] = useState(null);
@@ -14,7 +17,10 @@ export const Freewrite = () => {
 
   useEffect(() => {
     fetchPrompt();
-  }, []);
+    if (feedback) {
+      insertStats();
+    }
+  }, [feedback]);
 
   const fetchPrompt = async (excludeId = null) => {
     try {
@@ -25,6 +31,20 @@ export const Freewrite = () => {
     } catch (err) {
       console.error("Failed to fetch prompt:", err);
     }
+  };
+
+  const insertStats = async () => {
+    if (!user || !feedback) return;
+
+    const { error } = await supabase.from("freewrite_attempts").insert({
+      user_id: user.id,
+      prompt_id: prompt.id,
+      quality_score: feedback.qualityScore,
+      on_topic_score: feedback.onTopicScore,
+      word_count: feedback.wordCount,
+    });
+
+    if (error) console.error("Failed to save stats:", error);
   };
 
   const handleStart = (minutes) => {

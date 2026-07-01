@@ -28,6 +28,9 @@ export const Navbar = () => {
         <li>
           <Link to="/write">Free Write</Link>
         </li>
+        <li>
+          <Link to="/stats">Stats</Link>
+        </li>
         {user ? (
           <li>
             <button onClick={handleLogout} className="navbar-logout-btn">

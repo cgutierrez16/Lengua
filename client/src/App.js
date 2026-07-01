@@ -12,6 +12,7 @@ import { Navbar } from "./components/navbar";
 import { Login } from "./pages/login";
 import { Signup } from "./pages/signup";
 import { AuthProvider } from "./AuthContext";
+import { Stats } from "./pages/stats"
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/stats" element={<Stats />} />
           </Routes>
         </Router>
       </div>
