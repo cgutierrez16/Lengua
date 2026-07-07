@@ -6,9 +6,16 @@ import "../styles/stats.css";
 export const Stats = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("lyrics");
+  const [freewriteActiveTab, setFreewriteActiveTab] = useState("all");
   const [lyricAttempts, setLyricAttempts] = useState([]);
   const [freewriteAttempts, setFreewriteAttempts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const filteredFreewriteAttempts =
+    freewriteActiveTab === "all"
+      ? freewriteAttempts
+      : freewriteAttempts.filter(
+          (attempt) => attempt.write_time === Number(freewriteActiveTab),
+        );
 
   useEffect(() => {
     if (!user) {
@@ -45,7 +52,10 @@ export const Stats = () => {
   };
 
   const formatDate = (dateStr) =>
-    new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
 
   // ── Streak calculation (combined across both features) ──
   const calculateStreak = () => {
@@ -82,27 +92,36 @@ export const Stats = () => {
   // ── Lyrics stats ──
   const avgLyricScore = lyricAttempts.length
     ? Math.round(
-        lyricAttempts.reduce((sum, a) => sum + a.overall_score, 0) / lyricAttempts.length
+        lyricAttempts.reduce((sum, a) => sum + a.overall_score, 0) /
+          lyricAttempts.length,
       )
     : 0;
 
   const songsCompleted = new Set(lyricAttempts.map((a) => a.song_id)).size;
 
   // ── Free write stats ──
-  const avgQualityScore = freewriteAttempts.length
+  const avgQualityScore = filteredFreewriteAttempts.length
     ? Math.round(
-        freewriteAttempts.reduce((sum, a) => sum + a.quality_score, 0) / freewriteAttempts.length
+        filteredFreewriteAttempts.reduce((sum, a) => sum + a.quality_score, 0) /
+          filteredFreewriteAttempts.length,
       )
     : 0;
 
-  const avgWordCount = freewriteAttempts.length
+  const avgWordCount = filteredFreewriteAttempts.length
     ? Math.round(
-        freewriteAttempts.reduce((sum, a) => sum + a.word_count, 0) / freewriteAttempts.length
+        filteredFreewriteAttempts.reduce((sum, a) => sum + a.word_count, 0) /
+          filteredFreewriteAttempts.length,
       )
     : 0;
 
   // ── Chart line generator ──
-  const buildLinePoints = (data, key, width = 600, height = 200, padding = 20) => {
+  const buildLinePoints = (
+    data,
+    key,
+    width = 600,
+    height = 200,
+    padding = 20,
+  ) => {
     if (data.length === 0) return "";
     if (data.length === 1) {
       return `${padding},${height - padding}`;
@@ -169,12 +188,16 @@ export const Stats = () => {
             </div>
             <div className="stats-summary-card">
               <span className="stats-summary-label">Current streak</span>
-              <span className="stats-summary-number">{calculateStreak()} days</span>
+              <span className="stats-summary-number">
+                {calculateStreak()} days
+              </span>
             </div>
           </div>
 
           {lyricAttempts.length === 0 ? (
-            <p className="stats-empty">No lyric translations yet — go translate a song!</p>
+            <p className="stats-empty">
+              No lyric translations yet — go translate a song!
+            </p>
           ) : (
             <>
               <div className="stats-section">
@@ -188,10 +211,13 @@ export const Stats = () => {
                       strokeWidth="3"
                     />
                     {lyricAttempts.map((a, i) => {
-                      const step = (600 - 40) / Math.max(lyricAttempts.length - 1, 1);
+                      const step =
+                        (600 - 40) / Math.max(lyricAttempts.length - 1, 1);
                       const x = 20 + i * step;
                       const y = 200 - 20 - (a.overall_score / 100) * (200 - 40);
-                      return <circle key={i} cx={x} cy={y} r="4" fill="#5ae4a7" />;
+                      return (
+                        <circle key={i} cx={x} cy={y} r="4" fill="#5ae4a7" />
+                      );
                     })}
                   </svg>
                 </div>
@@ -200,15 +226,24 @@ export const Stats = () => {
               <div className="stats-section">
                 <h2 className="stats-section-title">Recent attempts</h2>
                 <div className="stats-recent-list">
-                  {[...lyricAttempts].reverse().slice(0, 10).map((a) => (
-                    <div key={a.id} className="stats-recent-row">
-                      <span className="stats-recent-song">{a.songs?.title || "Unknown song"}</span>
-                      <span className="stats-recent-date">{formatDate(a.created_at)}</span>
-                      <span className={`stats-recent-score pill-${getScoreLevel(a.overall_score)}`}>
-                        {Math.round(a.overall_score)}%
-                      </span>
-                    </div>
-                  ))}
+                  {[...lyricAttempts]
+                    .reverse()
+                    .slice(0, 10)
+                    .map((a) => (
+                      <div key={a.id} className="stats-recent-row">
+                        <span className="stats-recent-song">
+                          {a.songs?.title || "Unknown song"}
+                        </span>
+                        <span className="stats-recent-date">
+                          {formatDate(a.created_at)}
+                        </span>
+                        <span
+                          className={`stats-recent-score pill-${getScoreLevel(a.overall_score)}`}
+                        >
+                          {Math.round(a.overall_score)}%
+                        </span>
+                      </div>
+                    ))}
                 </div>
               </div>
             </>
@@ -216,10 +251,41 @@ export const Stats = () => {
         </div>
       ) : (
         <div className="stats-content">
+          <div className="freewrite-filter-bar">
+            <button
+              className={freewriteActiveTab === "all" ? "active" : ""}
+              onClick={() => setFreewriteActiveTab("all")}
+            >
+              All
+            </button>
+
+            <button
+              className={freewriteActiveTab === "1" ? "active" : ""}
+              onClick={() => setFreewriteActiveTab("1")}
+            >
+              1 Minute
+            </button>
+
+            <button
+              className={freewriteActiveTab === "3" ? "active" : ""}
+              onClick={() => setFreewriteActiveTab("3")}
+            >
+              3 Minutes
+            </button>
+
+            <button
+              className={freewriteActiveTab === "5" ? "active" : ""}
+              onClick={() => setFreewriteActiveTab("5")}
+            >
+              5 Minutes
+            </button>
+          </div>
           <div className="stats-summary-row">
             <div className="stats-summary-card">
               <span className="stats-summary-label">Sessions completed</span>
-              <span className="stats-summary-number">{freewriteAttempts.length}</span>
+              <span className="stats-summary-number">
+                {filteredFreewriteAttempts.length}
+              </span>
             </div>
             <div className="stats-summary-card">
               <span className="stats-summary-label">Average quality score</span>
@@ -231,8 +297,10 @@ export const Stats = () => {
             </div>
           </div>
 
-          {freewriteAttempts.length === 0 ? (
-            <p className="stats-empty">No free write sessions yet — give it a try!</p>
+          {filteredFreewriteAttempts.length === 0 ? (
+            <p className="stats-empty">
+              No free write sessions yet — give it a try!
+            </p>
           ) : (
             <>
               <div className="stats-section">
@@ -240,16 +308,22 @@ export const Stats = () => {
                 <div className="stats-chart-placeholder">
                   <svg viewBox="0 0 600 200" className="stats-line-chart">
                     <polyline
-                      points={buildLinePoints(freewriteAttempts, "quality_score")}
+                      points={buildLinePoints(
+                        filteredFreewriteAttempts,
+                        "quality_score",
+                      )}
                       fill="none"
                       stroke="#5ae4a7"
                       strokeWidth="3"
                     />
-                    {freewriteAttempts.map((a, i) => {
-                      const step = (600 - 40) / Math.max(freewriteAttempts.length - 1, 1);
+                    {filteredFreewriteAttempts.map((a, i) => {
+                      const step =
+                        (600 - 40) / Math.max(filteredFreewriteAttempts.length - 1, 1);
                       const x = 20 + i * step;
                       const y = 200 - 20 - (a.quality_score / 100) * (200 - 40);
-                      return <circle key={i} cx={x} cy={y} r="4" fill="#5ae4a7" />;
+                      return (
+                        <circle key={i} cx={x} cy={y} r="4" fill="#5ae4a7" />
+                      );
                     })}
                   </svg>
                 </div>
@@ -258,15 +332,24 @@ export const Stats = () => {
               <div className="stats-section">
                 <h2 className="stats-section-title">Recent sessions</h2>
                 <div className="stats-recent-list">
-                  {[...freewriteAttempts].reverse().slice(0, 10).map((a) => (
-                    <div key={a.id} className="stats-recent-row">
-                      <span className="stats-recent-song">{a.prompts?.prompt_es || "Unknown prompt"}</span>
-                      <span className="stats-recent-date">{formatDate(a.created_at)}</span>
-                      <span className={`stats-recent-score pill-${getScoreLevel(a.quality_score)}`}>
-                        {Math.round(a.quality_score)}%
-                      </span>
-                    </div>
-                  ))}
+                  {[...filteredFreewriteAttempts]
+                    .reverse()
+                    .slice(0, 10)
+                    .map((a) => (
+                      <div key={a.id} className="stats-recent-row">
+                        <span className="stats-recent-song">
+                          {a.prompts?.prompt_es || "Unknown prompt"}
+                        </span>
+                        <span className="stats-recent-date">
+                          {formatDate(a.created_at)}
+                        </span>
+                        <span
+                          className={`stats-recent-score pill-${getScoreLevel(a.quality_score)}`}
+                        >
+                          {Math.round(a.quality_score)}%
+                        </span>
+                      </div>
+                    ))}
                 </div>
               </div>
             </>

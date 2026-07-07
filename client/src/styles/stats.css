@@ -141,3 +141,30 @@
 .pill-green { background: #d4f5e5; color: #0f6e56; }
 .pill-yellow { background: #faeeda; color: #854f0b; }
 .pill-red { background: #fde8e8; color: #a32d2d; }
+
+.freewrite-filter-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #2b2b2b;
+}
+
+.freewrite-filter-bar button {
+  background: none;
+  border: none;
+  color: #888;
+  padding: 10px 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  border-bottom: 2px solid transparent;
+  transition: 0.2s;
+}
+
+.freewrite-filter-bar button:hover {
+  color: white;
+}
+
+.freewrite-filter-bar button.active {
+  color: #5ae4a7;
+  border-bottom-color: #5ae4a7;
+}
