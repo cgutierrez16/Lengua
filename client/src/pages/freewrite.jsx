@@ -43,6 +43,7 @@ export const Freewrite = () => {
       on_topic_score: feedback.onTopicScore,
       word_count: feedback.wordCount,
       write_time: selectedTime,
+      text: userText,
     });
 
     if (error) console.error("Failed to save stats:", error);

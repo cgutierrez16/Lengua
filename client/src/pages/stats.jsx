@@ -9,6 +9,10 @@ export const Stats = () => {
   const [freewriteActiveTab, setFreewriteActiveTab] = useState("all");
   const [lyricAttempts, setLyricAttempts] = useState([]);
   const [freewriteAttempts, setFreewriteAttempts] = useState([]);
+  const [selectedFreewriteAttempt, setSelectedFreewriteAttempt] = useState({});
+  const [selectedLyricAttempt, setSelectedLyricAttempt] = useState([]);
+  const [showWriteModal, setShowWriteModal] = useState(false);
+  const [showLyricModal, setShowLyricModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const filteredFreewriteAttempts =
     freewriteActiveTab === "all"
@@ -30,7 +34,7 @@ export const Stats = () => {
 
     const { data: lyrics } = await supabase
       .from("lyric_attempts")
-      .select("*")
+      .select("*, songs(title)")
       .eq("user_id", user.id)
       .order("created_at", { ascending: true });
 
@@ -43,6 +47,30 @@ export const Stats = () => {
     setLyricAttempts(lyrics || []);
     setFreewriteAttempts(freewrites || []);
     setLoading(false);
+  };
+
+  // Helper function to fetch the stats for a specific freewrite attempt. This is useful for the modal feature where
+  // a user can click on their previous freewrite attempts and see the full details.
+  const fetchFreewrite = async (freewriteId) => {
+    const { data: freewrite } = await supabase
+      .from("freewrite_attempts")
+      .select("*, prompts(prompt_es)")
+      .eq("id", freewriteId)
+      .single();
+
+    return freewrite;
+  };
+
+  // Helper function the fetch the stats for a specific lyric translation attempt. This is once again going to be used
+  // for populating the modal that gives users a details breakdown of previous attempts from the stats page.
+  const fetchLyricAttempt = async (attemptId) => {
+    const { data: attempt } = await supabase
+      .from("lyric_attempts")
+      .select("*, songs(title)")
+      .eq("id", attemptId)
+      .single();
+
+    return attempt;
   };
 
   const getScoreLevel = (score) => {
@@ -139,6 +167,26 @@ export const Stats = () => {
       .join(" ");
   };
 
+  const openWriteModal = async (id) => {
+    setShowWriteModal(true);
+    const freewriteData = await fetchFreewrite(id);
+    setSelectedFreewriteAttempt(freewriteData);
+  };
+
+  const closeWriteModal = () => {
+    setShowWriteModal(false);
+  };
+
+  const openLyricModal = async (id) => {
+    setShowLyricModal(true);
+    const lyricData = await fetchLyricAttempt(id);
+    setSelectedLyricAttempt(lyricData);
+  };
+
+  const closeLyricModal = () => {
+    setShowLyricModal(false);
+  };
+
   if (!user) {
     return (
       <div className="stats-page">
@@ -231,17 +279,16 @@ export const Stats = () => {
                     .slice(0, 10)
                     .map((a) => (
                       <div key={a.id} className="stats-recent-row">
-                        <span className="stats-recent-song">
-                          {a.songs?.title || "Unknown song"}
-                        </span>
-                        <span className="stats-recent-date">
-                          {formatDate(a.created_at)}
-                        </span>
-                        <span
-                          className={`stats-recent-score pill-${getScoreLevel(a.overall_score)}`}
-                        >
-                          {Math.round(a.overall_score)}%
-                        </span>
+                        <button onClick={() => openLyricModal(a.id)}>
+                          <span className="stats-recent-song">
+                            {a.songs?.title || "Unknown song"}
+                          </span>
+                          <span
+                            className={`stats-recent-score pill-${getScoreLevel(a.overall_score)}`}
+                          >
+                            {Math.round(a.overall_score)}%
+                          </span>
+                        </button>
                       </div>
                     ))}
                 </div>
@@ -318,7 +365,8 @@ export const Stats = () => {
                     />
                     {filteredFreewriteAttempts.map((a, i) => {
                       const step =
-                        (600 - 40) / Math.max(filteredFreewriteAttempts.length - 1, 1);
+                        (600 - 40) /
+                        Math.max(filteredFreewriteAttempts.length - 1, 1);
                       const x = 20 + i * step;
                       const y = 200 - 20 - (a.quality_score / 100) * (200 - 40);
                       return (
@@ -337,23 +385,82 @@ export const Stats = () => {
                     .slice(0, 10)
                     .map((a) => (
                       <div key={a.id} className="stats-recent-row">
-                        <span className="stats-recent-song">
-                          {a.prompts?.prompt_es || "Unknown prompt"}
-                        </span>
-                        <span className="stats-recent-date">
-                          {formatDate(a.created_at)}
-                        </span>
-                        <span
-                          className={`stats-recent-score pill-${getScoreLevel(a.quality_score)}`}
-                        >
-                          {Math.round(a.quality_score)}%
-                        </span>
+                        <button onClick={() => openWriteModal(a.id)}>
+                          <span className="stats-recent-song">
+                            {a.prompts?.prompt_es || "Unknown prompt"}
+                          </span>
+                          <span className="stats-recent-date">
+                            {formatDate(a.created_at)}
+                          </span>
+                          <span
+                            className={`stats-recent-score pill-${getScoreLevel(a.quality_score)}`}
+                          >
+                            {Math.round(a.quality_score)}%
+                          </span>
+                        </button>
                       </div>
                     ))}
                 </div>
               </div>
             </>
           )}
+        </div>
+      )}
+
+      {/* Freewrite attempt modal */}
+      {showWriteModal && (
+        <div className="modal-overlay" onClick={closeWriteModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>{selectedFreewriteAttempt.prompts?.prompt_es}</h2>
+
+            <p>
+              <strong>Time:</strong> {selectedFreewriteAttempt.write_time}{" "}
+              minutes
+            </p>
+            <p>
+              <strong>On topic score:</strong>{" "}
+              {selectedFreewriteAttempt.on_topic_score}
+            </p>
+            <p>
+              <strong>Quality score:</strong>{" "}
+              {selectedFreewriteAttempt.quality_score}
+            </p>
+            <p>
+              <strong>Word count:</strong> {selectedFreewriteAttempt.word_count}
+            </p>
+            <p>
+              <strong>Date:</strong>{" "}
+              {new Date(selectedFreewriteAttempt.created_at).toLocaleString(
+                "en-US",
+              )}
+            </p>
+
+            <h5>Response:</h5>
+            <p>{selectedFreewriteAttempt.text}</p>
+
+            <button onClick={closeWriteModal}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* Lyric attempt modal */}
+      {showLyricModal && (
+        <div className="modal-overlay" onClick={closeLyricModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>{selectedLyricAttempt.songs?.title}</h2>
+
+            <p>
+              <strong>Overall score:</strong>{" "}
+              {selectedLyricAttempt.overall_score}%
+            </p>
+            <p>
+              <strong>Date:</strong>{" "}
+              {new Date(selectedLyricAttempt.created_at).toLocaleString(
+                "en-US",
+              )}
+            </p>
+            <button onClick={closeLyricModal}>Close</button>
+          </div>
         </div>
       )}
     </div>
