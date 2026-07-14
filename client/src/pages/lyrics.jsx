@@ -26,44 +26,49 @@ export const Lyrics = () => {
   const [wordAnalysis, setWordAnalysis] = useState({});
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("results");
+  // This state will be used for the active search feature
+  const [searchResults, setSearchResults] = useState([]);
+
+  //supabase.com/dashboard/project/dyiemdfcuxphvqryspxg/editor
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    //supabase.com/dashboard/project/dyiemdfcuxphvqryspxg/editor
-    https: setSearching(true);
+
+    setSearching(true);
     setSearchMessage("Searching...");
 
-    await axios
-      .get("http://localhost:3001/api/lyrics", { params: { userInput } })
-      .then((res) => {
-        if (!res.data.rows || res.data.rows.length === 0) {
-          setSearchMessage("Song not found.");
-          return;
-        }
-        const song = res.data.rows[0];
-        setSongID(song.id);
-        setArtist(song.artist);
-        setTitle(song.title);
-        setLyrics(song.lyrics);
-        setTranslation(song.translation);
-        setAlbumTitle(song.albumtitle);
-        setAlbumCoverLink(song.albumcoverlink);
-        setShowResults(false);
-        setScores([]);
-        setSearchMessage("");
-        setActiveTab("results");
-      })
-      .catch((err) => {
-        console.error("Error:", err);
-        setSearchMessage("Something went wrong. Please try again.");
+    try {
+      const res = await axios.post("http://localhost:3001/api/import-song", {
+        userInput,
       });
 
-    setSearching(false);
-    setUserInput("");
+      const song = res.data;
+
+      setSongID(song.id);
+      setArtist(song.artist);
+      setTitle(song.title);
+      setLyrics(song.lyrics);
+      setTranslation(song.translation);
+      setAlbumTitle(song.albumtitle);
+      setAlbumCoverLink(song.albumcoverlink);
+
+      setShowResults(false);
+      setScores([]);
+      setSearchMessage("");
+      setActiveTab("results");
+
+      setSearchResults([]);
+      setUserInput("");
+    } catch (err) {
+      console.error(err);
+      setSearchMessage("Something went wrong.");
+    } finally {
+      setSearching(false);
+    }
   };
 
-  const handleChange = (event) => {
-    setUserInput(event.target.value);
+  const handleChange = (e) => {
+    setUserInput(e.target.value);
   };
 
   const insertStats = async (finalScores) => {
@@ -74,7 +79,9 @@ export const Lyrics = () => {
     );
 
     const overallScore = finalScores.length
-      ? Math.round((finalScores.reduce((a, b) => a + b, 0) / finalScores.length) * 100)
+      ? Math.round(
+          (finalScores.reduce((a, b) => a + b, 0) / finalScores.length) * 100,
+        )
       : 0;
 
     const { error } = await supabase.from("lyric_attempts").insert({
@@ -171,14 +178,54 @@ export const Lyrics = () => {
     }
   };
 
+  const loadSong = async (songId) => {
+    try {
+      const res = await axios.get(`http://localhost:3001/api/lyrics/${songId}`);
+
+      const song = res.data;
+
+      setSongID(song.id);
+      setArtist(song.artist);
+      setTitle(song.title);
+      setLyrics(song.lyrics);
+      setTranslation(song.translation);
+      setAlbumTitle(song.albumtitle);
+      setAlbumCoverLink(song.albumcoverlink);
+
+      setShowResults(false);
+      setScores([]);
+      setSearchMessage("");
+      setActiveTab("results");
+
+      setSearchResults([]);
+      setUserInput("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  /* This is the useEffect responsible for the auto complete search feature*/
+  useEffect(() => {
+    if (!userInput.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      const res = await axios.get("http://localhost:3001/api/search-songs", {
+        params: { q: userInput },
+      });
+
+      setSearchResults(res.data);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [userInput]);
+
   return (
     <div className="lyrics-page">
       <div className="search-container">
-        <form
-          className="search-form"
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-        >
+        <form className="search-form" onSubmit={handleSubmit}>
           <div className="search-input-wrapper">
             <button type="submit" id="lyric-search-button">
               <i className="fa fa-search"></i>
@@ -189,13 +236,34 @@ export const Lyrics = () => {
               autoComplete="off"
               placeholder="Search..."
               value={userInput}
+              onChange={handleChange}
             />
           </div>
         </form>
-        {searchMessage && <p className="search-message">{searchMessage}</p>}
       </div>
+      {searching && (
+        <div className="loading-spinner-div">
+          <div className="spinner" />
+          <p style={{ color: "#838383" }}>Loading...</p>
+        </div>
+      )}
 
-      {title ? (
+      {searchResults.length > 0 && (
+        <div className="search-dropdown">
+          {searchResults.map((song) => (
+            <div
+              key={song.id}
+              className="search-result"
+              onClick={() => loadSong(song.id)}
+            >
+              <strong>{song.title}</strong>
+              <p>{song.artist}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!searching && title ? (
         <div>
           <div className="song-info-container">
             <div className="song-info-inner">
@@ -373,7 +441,9 @@ export const Lyrics = () => {
           )}
         </div>
       ) : (
-        <h1 className="no-song">No song selected</h1>
+        !searching && (
+          <h3 className="no-song">Search for a song to get started</h3>
+        )
       )}
     </div>
   );

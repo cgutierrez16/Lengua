@@ -11,11 +11,12 @@
 
 .mc-toggle {
   font-size: 13px;
-  color: #838383;
-  background: transparent;
+  color: black;
+  background-color: var(--primary);
   border: none;
+  border-radius: 1rem;
+  padding: .6rem;
   cursor: pointer;
-  text-decoration: underline;
 }
 
 .quiz-card {

@@ -7,7 +7,6 @@ const fetchLyrics = require("./scrape");
 const FormatTitle = require("./helperFunctions");
 const Anthropic = require("@anthropic-ai/sdk");
 const SpanishVerbs = require("spanish-verbs");
-const SearchAndScrape = require("./scrape");
 const axios = require("axios"); // for Hugging Face API requests
 //const fetch = require("node-fetch"); // for Hugging Face API requests
 require("dotenv").config(); // load .env variables
@@ -17,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 // ROUTES
-
+/*
 app.get("/api/lyrics", async (req, res) => {
   try {
     const userInput = req.query.userInput;
@@ -51,6 +50,101 @@ app.get("/api/lyrics", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch or scrape song" });
+  }
+});
+*/
+
+app.get("/api/search-songs", async (req, res) => {
+  try {
+    const q = FormatTitle(req.query.q);
+
+    const result = await pool.query(
+      `SELECT id, title, artist
+       FROM songs
+       WHERE formattitle LIKE $1
+       ORDER BY title
+       LIMIT 10`,
+      [`%${q}%`],
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Search failed" });
+  }
+});
+
+app.get("/api/lyrics/:id", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM songs WHERE id = $1", [
+      req.params.id,
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Song not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch song" });
+  }
+});
+
+app.post("/api/import-song", async (req, res) => {
+  try {
+    const { userInput } = req.body;
+
+    const formattedTitle = FormatTitle(userInput);
+
+    // First, see if we already have it
+    const existingSong = await pool.query(
+      "SELECT * FROM songs WHERE formattitle = $1",
+      [formattedTitle]
+    );
+
+    if (existingSong.rows.length > 0) {
+      return res.json(existingSong.rows[0]);
+    }
+
+    // Not in DB, scrape it
+    const [
+      artist,
+      title,
+      spanishLyrics,
+      englishLyrics,
+      albumName,
+      imageLink,
+    ] = await fetchLyrics(userInput);
+
+    const formattedScrapedTitle = FormatTitle(title);
+
+    await pool.query(
+      `INSERT INTO songs
+      (title, artist, lyrics, formattitle, translation, albumtitle, albumcoverlink)
+      VALUES ($1,$2,$3,$4,$5,$6,$7)
+      ON CONFLICT (formattitle) DO NOTHING`,
+      [
+        title,
+        artist,
+        spanishLyrics,
+        formattedScrapedTitle,
+        englishLyrics,
+        albumName,
+        imageLink,
+      ]
+    );
+
+    // Return the newly inserted song
+    const insertedSong = await pool.query(
+      "SELECT * FROM songs WHERE formattitle = $1",
+      [formattedScrapedTitle]
+    );
+
+    res.json(insertedSong.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to import song" });
   }
 });
 

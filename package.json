@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "client": "cd client && npm start",
+    "server": "cd server && nodemon index.js",
+    "ml": "cd ml_service && .\\venv\\Scripts\\python.exe .\\ml_service.py",
+    "dev": "concurrently \"npm run client\" \"npm run server\" \"npm run ml\""
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
+}

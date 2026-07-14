@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from "react";
 
 export const LyricTypingInput = ({ lines, lyricRefs }) => {
   const textareaRefs = useRef([]);
+  const currentLineRef = useRef(null);
+  const [currentLine, setCurrentLine] = useState(0);
 
   const tempArray = [
     "You have no idea",
@@ -26,6 +28,8 @@ export const LyricTypingInput = ({ lines, lyricRefs }) => {
     textareaRefs.current.forEach((el) => autoResize(el));
   }, [lines]);
 
+
+
   return (
     <div style={{ position: "relative" }}>
       {lines.map((line, lineIndex) => {
@@ -42,7 +46,9 @@ export const LyricTypingInput = ({ lines, lyricRefs }) => {
             }}
           >
             <textarea
+              onFocus={() => {setCurrentLine(lineIndex)}}
               ref={(el) => (textareaRefs.current[lineIndex] = el)}
+              ref={lineIndex === currentLine ? currentLineRef : null}
               rows={1}
               className="userTranslationInput"
               onChange={(e) => autoResize(e.target)}
