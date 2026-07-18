@@ -32,6 +32,7 @@ export const Home = () => {
             By taking advantage of effective language learning methods that other apps don't
           </h3>
         </div>
+
         <div className="feature-card">
           <div className="feature-card-text">
             <h1>Lyric Learner</h1>
@@ -48,6 +49,7 @@ export const Home = () => {
             <img src={temp2} alt="Lyric Learner preview" className="features-img" />
           </div>
         </div>
+
         <div className="feature-card">
           <div className="feature-card-image">
             <img src={temp1} alt="Free Write preview" className="features-img" />
@@ -63,6 +65,7 @@ export const Home = () => {
             </p>
           </div>
         </div>
+        
       </section>
 
       {/* About */}

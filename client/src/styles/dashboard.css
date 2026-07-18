@@ -1,0 +1,323 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #fffff0;
+  font-family: "Montserrat", sans-serif;
+  color: black;
+}
+
+/* ── Navbar ── */
+.navbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 1rem;
+  background-color: #fffff0;
+  z-index: 999;
+}
+
+.navbar-logo {
+  font-family: "Nothing You Could Do", cursive;
+  font-size: 46px;
+  font-weight: bold;
+  text-decoration: none;
+  color: black;
+  padding-left: 1rem;
+}
+
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 0;
+}
+
+.navbar-links li {
+  margin-right: 20px;
+}
+
+.navbar-links li a {
+  text-decoration: none;
+  color: black;
+  font-size: 24px;
+}
+
+.navbar-links li a:hover {
+  color: #5ae4a7;
+}
+
+/* ── Page ── */
+.dashboard-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ── Header ── */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-greeting {
+  font-size: 36px;
+  font-weight: 500;
+}
+
+.dashboard-subgreeting {
+  color: #838383;
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.streak-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  min-width: 100px;
+  text-align: center;
+}
+
+.streak-number {
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.streak-label {
+  font-size: 13px;
+  color: #838383;
+  margin-top: 4px;
+}
+
+/* ── Feature action cards ── */
+.feature-cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.feature-action-card {
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.feature-action-icon {
+  font-size: 28px;
+}
+
+.feature-action-title {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.feature-action-desc {
+  font-size: 14px;
+  color: #838383;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.feature-action-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  border: 1px solid black;
+  border-radius: 99px;
+  background: #5ae4a7;
+  font-size: 14px;
+  font-family: inherit;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+  text-align: center;
+  width: fit-content;
+}
+
+.feature-action-btn:hover {
+  background: #4abb88;
+}
+
+/* ── Stats summary ── */
+.stats-summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.stats-summary-card {
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stats-summary-label {
+  font-size: 12px;
+  color: #838383;
+}
+
+.stats-summary-number {
+  font-size: 28px;
+  font-weight: 500;
+}
+
+/* ── Continue card ── */
+.continue-card {
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: #f0fdf8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.continue-label {
+  font-size: 12px;
+  color: #838383;
+  margin-bottom: 4px;
+}
+
+.continue-title {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.continue-song {
+  color: #0f6e56;
+}
+
+.continue-sub {
+  font-size: 13px;
+  color: #838383;
+  margin-top: 4px;
+}
+
+/* ── Recent activity ── */
+.recent-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.recent-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.recent-list {
+  border: 1px solid black;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.recent-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 0.5px solid #eee;
+  gap: 1rem;
+}
+
+.recent-item:last-child {
+  border-bottom: none;
+}
+
+.recent-item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.recent-album-placeholder {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 6px;
+  background: #e0e0e0;
+}
+
+.recent-prompt-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 6px;
+  background: #f0fdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.recent-item-name {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-item-sub {
+  font-size: 12px;
+  color: #838383;
+  margin-top: 2px;
+}
+
+.recent-view-all {
+  display: block;
+  text-align: right;
+  font-size: 13px;
+  color: #838383;
+  text-decoration: none;
+  margin-top: 0.75rem;
+}
+
+.recent-view-all:hover {
+  color: black;
+}
+
+/* ── Score pills ── */
+.score-pill {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.pill-green {
+  background: #d4f5e5;
+  color: #0f6e56;
+}
+.pill-yellow {
+  background: #faeeda;
+  color: #854f0b;
+}
+.pill-red {
+  background: #fde8e8;
+  color: #a32d2d;
+}

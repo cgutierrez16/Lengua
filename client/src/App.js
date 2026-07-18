@@ -11,8 +11,35 @@ import { About } from "./pages/about";
 import { Navbar } from "./components/navbar";
 import { Login } from "./pages/login";
 import { Signup } from "./pages/signup";
-import { AuthProvider } from "./AuthContext";
-import { Stats } from "./pages/stats"
+import { AuthProvider, useAuth } from "./AuthContext";
+import { Stats } from "./pages/stats";
+import { Dashboard } from "./pages/dashboard";
+import { LyricsGate } from "./pages/lyricsGate";
+import { FreewriteGate } from "./pages/freewriteGate";
+import { StatsGate } from "./pages/statsGate";
+
+// Separate component so it can safely call useAuth inside AuthProvider
+const AppRoutes = () => {
+  const { user } = useAuth();
+
+  return (
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={user ? <Dashboard /> : <Home />} />
+        <Route path="/lyrics" element={user ? <Lyrics /> : <LyricsGate />} />
+        <Route
+          path="/write"
+          element={user ? <Freewrite /> : <FreewriteGate />}
+        />
+        <Route path="/about" element={<About />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/stats" element={user ? <Stats /> : <StatsGate/> } />
+      </Routes>
+    </>
+  );
+};
 
 function App() {
   return (
@@ -22,16 +49,7 @@ function App() {
           <style>{"body { background-color: #FFFFF0; }"}</style>
         </Helmet>
         <Router>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/lyrics" element={<Lyrics />} />
-            <Route path="/write" element={<Freewrite />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/stats" element={<Stats />} />
-          </Routes>
+          <AppRoutes />
         </Router>
       </div>
     </AuthProvider>
