@@ -1,7 +1,113 @@
-import React from "react";
+import { React, useState, useEffect } from "react";
+import { supabase } from "../supabaseClient";
+import { Link } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 import "../styles/dashboard.css";
 
 export const Dashboard = () => {
+  const { user } = useAuth();
+  const [dashboardData, setDashboardData] = useState(null);
+
+  useEffect(() => {
+    if (!user) return;
+    fetchDashboardData();
+  }, [user]);
+
+  const fetchDashboardData = async () => {
+    const [lyricRes, freewriteRes] = await Promise.all([
+      supabase
+        .from("lyric_attempts")
+        .select(
+          "overall_score, song_id, created_at, songs(title, albumcoverlink, artist)",
+        )
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false }),
+
+      supabase
+        .from("freewrite_attempts")
+        .select(
+          "quality_score, word_count, write_time, created_at, prompts(prompt_es)",
+        )
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false }),
+    ]);
+
+    const lyricAttempts = lyricRes.data || [];
+    const freewriteAttempts = freewriteRes.data || [];
+
+    const avgTransScore = lyricAttempts.length
+      ? Math.round(
+          lyricAttempts.reduce((acc, a) => acc + a.overall_score, 0) /
+            lyricAttempts.length,
+        )
+      : 0;
+
+    const avgQualityScore = freewriteAttempts.length
+      ? Math.round(
+          freewriteAttempts.reduce((acc, a) => acc + a.quality_score, 0) /
+            freewriteAttempts.length,
+        )
+      : 0;
+
+    const streak = calculateStreak(lyricAttempts, freewriteAttempts);
+
+    setDashboardData({
+      totalSongs: new Set(lyricAttempts.map((a) => a.song_id)).size,
+      avgTransScore,
+      totalWrites: freewriteAttempts.length,
+      avgQualityScore,
+      recentLyrics: lyricAttempts.slice(0, 3),
+      recentFreewrites: freewriteAttempts.slice(0, 3),
+      streak,
+    });
+  };
+
+  const calculateStreak = (lyricAttempts, freewriteAttempts) => {
+    const allDates = [
+      ...lyricAttempts.map((a) => a.created_at),
+      ...freewriteAttempts.map((a) => a.created_at),
+    ]
+      .map((d) => new Date(d).toDateString())
+      .filter((d, i, arr) => arr.indexOf(d) === i)
+      .sort((a, b) => new Date(b) - new Date(a));
+
+    if (allDates.length === 0) return 0;
+
+    let streak = 0;
+    let cursor = new Date();
+    cursor.setHours(0, 0, 0, 0);
+
+    for (let i = 0; i < allDates.length; i++) {
+      const date = new Date(allDates[i]);
+      date.setHours(0, 0, 0, 0);
+      const diff = Math.round((cursor - date) / (1000 * 60 * 60 * 24));
+
+      if (diff === 0 || diff === 1) {
+        streak++;
+        cursor = date;
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+  };
+
+  if (!dashboardData) {
+    return (
+      <div
+        className="dashboard-page"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          paddingTop: "4rem",
+        }}
+      >
+        <div className="spinner" />
+      </div>
+    );
+  }
+
   return (
     <div>
       <div class="dashboard-page">
@@ -14,8 +120,8 @@ export const Dashboard = () => {
             </p>
           </div>
           <div class="streak-card">
-            <span class="streak-number">4</span>
-            <span class="streak-label">day streak 🔥</span>
+            <span class="streak-number">{dashboardData.streak}</span>
+            <span class="streak-label">day streak</span>
           </div>
         </div>
 
@@ -28,9 +134,9 @@ export const Dashboard = () => {
               Search for a Spanish song and translate it line by line. Get
               scored on your accuracy and learn the words you missed.
             </p>
-            <a class="feature-action-btn" href="#">
-              Start translating
-            </a>
+            <Link to="/lyrics">
+              <a class="feature-action-btn">Start translating</a>
+            </Link>
           </div>
           <div class="feature-action-card">
             <div class="feature-action-icon">✏️</div>
@@ -39,9 +145,9 @@ export const Dashboard = () => {
               Get a timed writing prompt and practice forming Spanish sentences.
               Receive AI feedback on your grammar and topic relevance.
             </p>
-            <a class="feature-action-btn" href="#">
-              Start writing
-            </a>
+            <Link to="/write">
+              <a class="feature-action-btn">Start writing</a>
+            </Link>
           </div>
         </div>
 
@@ -49,19 +155,25 @@ export const Dashboard = () => {
         <div class="stats-summary-row">
           <div class="stats-summary-card">
             <span class="stats-summary-label">Songs translated</span>
-            <span class="stats-summary-number">12</span>
+            <span class="stats-summary-number">{dashboardData.totalSongs}</span>
           </div>
           <div class="stats-summary-card">
             <span class="stats-summary-label">Avg translation score</span>
-            <span class="stats-summary-number">78%</span>
+            <span class="stats-summary-number">
+              {dashboardData.avgTransScore}%
+            </span>
           </div>
           <div class="stats-summary-card">
             <span class="stats-summary-label">Free write sessions</span>
-            <span class="stats-summary-number">8</span>
+            <span class="stats-summary-number">
+              {dashboardData.totalWrites}
+            </span>
           </div>
           <div class="stats-summary-card">
             <span class="stats-summary-label">Avg quality score</span>
-            <span class="stats-summary-number">65%</span>
+            <span class="stats-summary-number">
+              {dashboardData.avgQualityScore}%
+            </span>
           </div>
         </div>
 
@@ -85,76 +197,95 @@ export const Dashboard = () => {
           <div class="recent-section">
             <h2 class="recent-title">Recent translations</h2>
             <div class="recent-list">
-              <div class="recent-item">
-                <div class="recent-item-left">
-                  <div class="recent-album-placeholder"></div>
-                  <div>
-                    <p class="recent-item-name">Turista</p>
-                    <p class="recent-item-sub">Bad Bunny · Apr 18</p>
+              {dashboardData.recentLyrics.map((current) => {
+                const date = new Date(current.created_at);
+                const formattedDate = date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                });
+
+                let color = "";
+                if (current.overall_score >= 80) {
+                  color = "green";
+                } else if (
+                  80 > current.overall_score &&
+                  current.overall_score >= 65
+                ) {
+                  color = "yellow";
+                } else {
+                  color = "red";
+                }
+
+                return (
+                  <div class="recent-item">
+                    <div class="recent-item-left">
+                      <div class="recent-album-cover">
+                        <img
+                          src={current.songs.albumcoverlink}
+                          alt="Album cover"
+                        />
+                      </div>
+                      <div>
+                        <p class="recent-item-name">{current.songs.title}</p>
+                        <p class="recent-item-sub">
+                          {current.songs.artist} · {formattedDate}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`score-pill pill-${color}`}>
+                      {current.overall_score}%
+                    </span>
                   </div>
-                </div>
-                <span class="score-pill pill-green">91%</span>
-              </div>
-              <div class="recent-item">
-                <div class="recent-item-left">
-                  <div class="recent-album-placeholder"></div>
-                  <div>
-                    <p class="recent-item-name">Donde Has Estado</p>
-                    <p class="recent-item-sub">Eslabon Armado · Apr 16</p>
-                  </div>
-                </div>
-                <span class="score-pill pill-yellow">72%</span>
-              </div>
-              <div class="recent-item">
-                <div class="recent-album-placeholder"></div>
-                <div class="recent-item-left">
-                  <div class="recent-album-placeholder"></div>
-                  <div>
-                    <p class="recent-item-name">Eso y Más</p>
-                    <p class="recent-item-sub">Jorge Celedón · Apr 14</p>
-                  </div>
-                </div>
-                <span class="score-pill pill-red">48%</span>
-              </div>
+                );
+              })}
             </div>
-            <a class="recent-view-all" href="#">
-              View all →
-            </a>
+            <Link to="/stats">
+              <a class="recent-view-all">View all →</a>
+            </Link>
           </div>
 
           <div class="recent-section">
             <h2 class="recent-title">Recent free writes</h2>
             <div class="recent-list">
-              <div class="recent-item">
-                <div class="recent-item-left">
-                  <div class="recent-prompt-icon">✏️</div>
-                  <div>
-                    <p class="recent-item-name">Write about your weekend</p>
-                    <p class="recent-item-sub">5 min · Apr 17 · 61 words</p>
+              {dashboardData.recentFreewrites.map((current) => {
+                const date = new Date(current.created_at);
+                const formattedDate = date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                });
+
+                let color = "";
+                if (current.quality_score >= 80) {
+                  color = "green";
+                } else if (
+                  80 > current.quality_score &&
+                  current.quality_score >= 65
+                ) {
+                  color = "yellow";
+                } else {
+                  color = "red";
+                }
+
+                return (
+                  <div class="recent-item">
+                    <div class="recent-item-left">
+                      <div class="recent-prompt-icon">✏️</div>
+                      <div>
+                        <p class="recent-item-name">
+                          {current.prompts.prompt_es}
+                        </p>
+                        <p class="recent-item-sub">
+                          {current.write_time} min · {formattedDate} ·{" "}
+                          {current.word_count} words
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`score-pill pill-${color}`}>
+                      {current.quality_score}%
+                    </span>
                   </div>
-                </div>
-                <span class="score-pill pill-yellow">68%</span>
-              </div>
-              <div class="recent-item">
-                <div class="recent-item-left">
-                  <div class="recent-prompt-icon">✏️</div>
-                  <div>
-                    <p class="recent-item-name">Describe your best friend</p>
-                    <p class="recent-item-sub">3 min · Apr 15 · 48 words</p>
-                  </div>
-                </div>
-                <span class="score-pill pill-green">82%</span>
-              </div>
-              <div class="recent-item">
-                <div class="recent-item-left">
-                  <div class="recent-prompt-icon">✏️</div>
-                  <div>
-                    <p class="recent-item-name">Talk about your hobbies</p>
-                    <p class="recent-item-sub">1 min · Apr 13 · 29 words</p>
-                  </div>
-                </div>
-                <span class="score-pill pill-red">51%</span>
-              </div>
+                );
+              })}
             </div>
             <a class="recent-view-all" href="#">
               View all →

@@ -129,7 +129,6 @@
 .about-headline {
   text-align: right;
   margin: auto 0;
-  border: 1px solid red;
 }
 
 .about-headline h1 {
@@ -141,7 +140,6 @@
 .about-text {
   max-width: 550px;
   text-align: left;
-  border: 1px solid red;
 }
 
 .about-text p {
