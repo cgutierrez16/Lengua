@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { Link } from "react-router-dom";
 import { useAuth } from "../AuthContext";
@@ -81,7 +81,6 @@ export const Dashboard = () => {
       const date = new Date(allDates[i]);
       date.setHours(0, 0, 0, 0);
       const diff = Math.round((cursor - date) / (1000 * 60 * 60 * 24));
-
       if (diff === 0 || diff === 1) {
         streak++;
         cursor = date;
@@ -89,207 +88,173 @@ export const Dashboard = () => {
         break;
       }
     }
-
     return streak;
   };
 
+  const getScoreLevel = (score) => {
+    if (score >= 80) return "green";
+    if (score >= 65) return "yellow";
+    return "red";
+  };
+
+  const formatDate = (dateStr) =>
+    new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+
   if (!dashboardData) {
     return (
-      <div
-        className="dashboard-page"
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          paddingTop: "4rem",
-        }}
-      >
+      <div className="dashboard-page dashboard-loading">
         <div className="spinner" />
       </div>
     );
   }
 
   return (
-    <div>
-      <div class="dashboard-page">
-        {/* <!-- Greeting + streak --> */}
-        <div class="dashboard-header">
-          <div>
-            <h1 class="dashboard-greeting">Welcome back, Carlos</h1>
-            <p class="dashboard-subgreeting">
-              Keep up the great work — your Spanish is improving every day.
-            </p>
-          </div>
-          <div class="streak-card">
-            <span class="streak-number">{dashboardData.streak}</span>
-            <span class="streak-label">day streak</span>
-          </div>
+    <div className="dashboard-page">
+      {/* Header */}
+      <div className="dashboard-header">
+        <div>
+          <h1 className="dashboard-greeting">Welcome back</h1>
+          <p className="dashboard-subgreeting">
+            Keep up the great work — your Spanish is improving every day.
+          </p>
         </div>
-
-        {/* <!-- Feature cards --> */}
-        <div class="feature-cards-row">
-          <div class="feature-action-card">
-            <div class="feature-action-icon">🎵</div>
-            <h2 class="feature-action-title">Lyric Translator</h2>
-            <p class="feature-action-desc">
-              Search for a Spanish song and translate it line by line. Get
-              scored on your accuracy and learn the words you missed.
-            </p>
-            <Link to="/lyrics">
-              <a class="feature-action-btn">Start translating</a>
-            </Link>
-          </div>
-          <div class="feature-action-card">
-            <div class="feature-action-icon">✏️</div>
-            <h2 class="feature-action-title">Free Write</h2>
-            <p class="feature-action-desc">
-              Get a timed writing prompt and practice forming Spanish sentences.
-              Receive AI feedback on your grammar and topic relevance.
-            </p>
-            <Link to="/write">
-              <a class="feature-action-btn">Start writing</a>
-            </Link>
-          </div>
+        <div className="streak-card">
+          <span className="streak-number">{dashboardData.streak}</span>
+          <span className="streak-label">day streak 🔥</span>
         </div>
+      </div>
 
-        {/* <!-- Stats summary --> */}
-        <div class="stats-summary-row">
-          <div class="stats-summary-card">
-            <span class="stats-summary-label">Songs translated</span>
-            <span class="stats-summary-number">{dashboardData.totalSongs}</span>
-          </div>
-          <div class="stats-summary-card">
-            <span class="stats-summary-label">Avg translation score</span>
-            <span class="stats-summary-number">
-              {dashboardData.avgTransScore}%
-            </span>
-          </div>
-          <div class="stats-summary-card">
-            <span class="stats-summary-label">Free write sessions</span>
-            <span class="stats-summary-number">
-              {dashboardData.totalWrites}
-            </span>
-          </div>
-          <div class="stats-summary-card">
-            <span class="stats-summary-label">Avg quality score</span>
-            <span class="stats-summary-number">
-              {dashboardData.avgQualityScore}%
-            </span>
-          </div>
+      {/* Feature cards */}
+      <div className="feature-cards-row">
+        <div className="feature-action-card feature-card-lyrics">
+          <div className="feature-action-icon">🎵</div>
+          <h2 className="feature-action-title">Lyric Translator</h2>
+          <p className="feature-action-desc">
+            Search for a Spanish song and translate it line by line. Get scored
+            on your accuracy and learn the words you missed.
+          </p>
+          <Link to="/lyrics" className="feature-action-btn">
+            Start translating
+          </Link>
         </div>
-
-        {/* <!-- Continue practicing --> */}
-        <div class="continue-card">
-          <div class="continue-left">
-            <p class="continue-label">Continue practicing</p>
-            <h3 class="continue-title">
-              You have 8 words to review from{" "}
-              <span class="continue-song">Turista</span>
-            </h3>
-            <p class="continue-sub">Last attempted Apr 18 · Score: 91%</p>
-          </div>
-          <a class="feature-action-btn" href="#">
-            Resume practice
-          </a>
+        <div className="feature-action-card feature-card-write">
+          <div className="feature-action-icon">✏️</div>
+          <h2 className="feature-action-title">Free Write</h2>
+          <p className="feature-action-desc">
+            Get a timed writing prompt and practice forming Spanish sentences.
+            Receive AI feedback on your grammar and topic relevance.
+          </p>
+          <Link to="/write" className="feature-action-btn">
+            Start writing
+          </Link>
         </div>
+      </div>
 
-        {/* <!-- Recent activity --> */}
-        <div class="recent-row">
-          <div class="recent-section">
-            <h2 class="recent-title">Recent translations</h2>
-            <div class="recent-list">
-              {dashboardData.recentLyrics.map((current) => {
-                const date = new Date(current.created_at);
-                const formattedDate = date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                });
+      {/* Stats summary */}
+      <div className="stats-summary-row">
+        <div className="stats-summary-card">
+          <span className="stats-summary-number">
+            {dashboardData.totalSongs}
+          </span>
+          <span className="stats-summary-label">Songs translated</span>
+        </div>
+        <div className="stats-summary-card">
+          <span className="stats-summary-number">
+            {dashboardData.avgTransScore}%
+          </span>
+          <span className="stats-summary-label">Avg translation score</span>
+        </div>
+        <div className="stats-summary-card">
+          <span className="stats-summary-number">
+            {dashboardData.totalWrites}
+          </span>
+          <span className="stats-summary-label">Free write sessions</span>
+        </div>
+        <div className="stats-summary-card">
+          <span className="stats-summary-number">
+            {dashboardData.avgQualityScore}%
+          </span>
+          <span className="stats-summary-label">Avg quality score</span>
+        </div>
+      </div>
 
-                let color = "";
-                if (current.overall_score >= 80) {
-                  color = "green";
-                } else if (
-                  80 > current.overall_score &&
-                  current.overall_score >= 65
-                ) {
-                  color = "yellow";
-                } else {
-                  color = "red";
-                }
-
-                return (
-                  <div class="recent-item">
-                    <div class="recent-item-left">
-                      <div class="recent-album-cover">
-                        <img
-                          src={current.songs.albumcoverlink}
-                          alt="Album cover"
-                        />
-                      </div>
-                      <div>
-                        <p class="recent-item-name">{current.songs.title}</p>
-                        <p class="recent-item-sub">
-                          {current.songs.artist} · {formattedDate}
-                        </p>
-                      </div>
-                    </div>
-                    <span className={`score-pill pill-${color}`}>
-                      {current.overall_score}%
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-            <Link to="/stats">
-              <a class="recent-view-all">View all →</a>
-            </Link>
-          </div>
-
-          <div class="recent-section">
-            <h2 class="recent-title">Recent free writes</h2>
-            <div class="recent-list">
-              {dashboardData.recentFreewrites.map((current) => {
-                const date = new Date(current.created_at);
-                const formattedDate = date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                });
-
-                let color = "";
-                if (current.quality_score >= 80) {
-                  color = "green";
-                } else if (
-                  80 > current.quality_score &&
-                  current.quality_score >= 65
-                ) {
-                  color = "yellow";
-                } else {
-                  color = "red";
-                }
-
-                return (
-                  <div class="recent-item">
-                    <div class="recent-item-left">
-                      <div class="recent-prompt-icon">✏️</div>
-                      <div>
-                        <p class="recent-item-name">
-                          {current.prompts.prompt_es}
-                        </p>
-                        <p class="recent-item-sub">
-                          {current.write_time} min · {formattedDate} ·{" "}
-                          {current.word_count} words
-                        </p>
-                      </div>
-                    </div>
-                    <span className={`score-pill pill-${color}`}>
-                      {current.quality_score}%
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-            <a class="recent-view-all" href="#">
+      {/* Recent activity */}
+      <div className="recent-row">
+        <div className="recent-section">
+          <div className="recent-section-header">
+            <h2 className="recent-title">Recent translations</h2>
+            <Link to="/stats" className="recent-view-all">
               View all →
-            </a>
+            </Link>
+          </div>
+          <div className="recent-list">
+            {dashboardData.recentLyrics.length === 0 ? (
+              <p className="recent-empty">No translations yet</p>
+            ) : (
+              dashboardData.recentLyrics.map((current, i) => (
+                <div className="recent-item" key={i}>
+                  <div className="recent-item-left">
+                    <img
+                      src={current.songs?.albumcoverlink}
+                      alt="Album cover"
+                      className="recent-album-cover"
+                    />
+                    <div className="recent-details">
+                      <p className="recent-item-name">{current.songs?.title}</p>
+                      <p className="recent-item-sub">
+                        {current.songs?.artist?.join(", ")} ·{" "}
+                        {formatDate(current.created_at)}
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={`score-pill pill-${getScoreLevel(current.overall_score)}`}
+                  >
+                    {Math.round(current.overall_score)}%
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="recent-section">
+          <div className="recent-section-header">
+            <h2 className="recent-title">Recent free writes</h2>
+            <Link to="/stats" className="recent-view-all">
+              View all →
+            </Link>
+          </div>
+          <div className="recent-list">
+            {dashboardData.recentFreewrites.length === 0 ? (
+              <p className="recent-empty">No free writes yet</p>
+            ) : (
+              dashboardData.recentFreewrites.map((current, i) => (
+                <div className="recent-item" key={i}>
+                  <div className="recent-item-left">
+                    <div className="recent-prompt-icon">✏️</div>
+                    <div className="recent-details">
+                      <p className="recent-item-name">
+                        {current.prompts?.prompt_es}
+                      </p>
+                      <p className="recent-item-sub">
+                        {current.write_time} min ·{" "}
+                        {formatDate(current.created_at)} · {current.word_count}{" "}
+                        words
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={`score-pill pill-${getScoreLevel(current.quality_score)}`}
+                  >
+                    {Math.round(current.quality_score)}%
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
