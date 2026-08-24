@@ -224,23 +224,6 @@ export const Lyrics = () => {
 
   return (
     <div className="lyrics-page">
-      <div className="search-container">
-        <form className="search-form" onSubmit={handleSubmit}>
-          <div className="search-input-wrapper">
-            <button type="submit" id="lyric-search-button">
-              <i className="fa fa-search"></i>
-            </button>
-            <input
-              type="text"
-              className="search-input"
-              autoComplete="off"
-              placeholder="Search..."
-              value={userInput}
-              onChange={handleChange}
-            />
-          </div>
-        </form>
-      </div>
       {searching && (
         <div className="loading-spinner-div">
           <div className="spinner" />
@@ -442,9 +425,33 @@ export const Lyrics = () => {
         </div>
       ) : (
         !searching && (
-          <h3 className="no-song">Search for a song to get started</h3>
+          <div className="lyrics-hero">
+            <h1 className="lyrics-hero-title">Translate the music you love</h1>
+            <p className="lyrics-hero-subtitle">
+              Search for a Spanish song, translate it line by line, and discover
+              what you actually know.
+            </p>
+          </div>
         )
       )}
+
+      <div className="search-container">
+        <form className="search-form" onSubmit={handleSubmit}>
+          <div className="search-input-wrapper">
+            <button type="submit" id="lyric-search-button">
+              <i className="fa fa-search"></i>
+            </button>
+            <input
+              type="text"
+              className="search-input"
+              autoComplete="off"
+              placeholder="Search..."
+              value={userInput}
+              onChange={handleChange}
+            />
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

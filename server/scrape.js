@@ -37,34 +37,47 @@ const fetchLyrics = async (searchQuery) => {
 };
 
 const deepl = require("deepl-node");
-
 const translator = new deepl.Translator(process.env.DEEPL_API_KEY);
-
 const Translate = async (lyricsArray) => {
-  const numberedLines = lyricsArray
-    .map((line, i) => `${i}: ${line}`)
-    .join("\n");
+  try {
+    const numberedLines = lyricsArray
+      .map((line, i) => `${i}: ${line}`)
+      .join("\n");
 
-  const message = await anthropic.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 4096,
-    messages: [
-      {
-        role: "user",
-        content: `Translate these Spanish song lyrics to natural, idiomatic English. Consider the full context of the song when translating each line, including slang, idioms, and ambiguous phrasing.
+    const message = await anthropic.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 4096,
+      system:
+        "You are a Spanish language education assistant helping students learn Spanish by translating song lyrics. Translate accurately and literally for educational purposes.",
+      messages: [
+        {
+          role: "user",
+          content: `Translate these Spanish song lyrics to natural, idiomatic English. Consider the full context of the song when translating each line, including slang, idioms, and ambiguous phrasing.
 
 ${numberedLines}
 
 Return ONLY a valid JSON array of strings, one per line, in the same order and same number of lines as the input. No markdown, no explanation, just the JSON array.`,
-      },
-    ],
-  });
+        },
+      ],
+    });
 
-  const text = message.content[0].text;
-  const clean = text.replace(/```json|```/g, "").trim();
-  const translations = JSON.parse(clean);
+    const text = message.content[0].text;
+    const clean = text.replace(/```json|```/g, "").trim();
+    const translations = JSON.parse(clean);
 
-  return translations;
+    return translations;
+  } catch (err) {
+    console.log(
+      "Claude translation blocked or failed, falling back to DeepL:",
+      err.message,
+    );
+    const translations = [];
+    for (const line of lyricsArray) {
+      const result = await translator.translateText(line, "es", "en-US");
+      translations.push(result.text);
+    }
+    return translations;
+  }
 };
 
 const getAlbumArt = async (artist, title) => {

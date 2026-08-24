@@ -11,4 +11,14 @@ function gradeTranslation(userTranslation, correctTranslation) {
     
 }
 
+const TranslateWithDeepl = async (lyricsArray) => {
+  const translator = new deepl.Translator(process.env.DEEPL_API_KEY);
+  const translations = [];
+  for (const line of lyricsArray) {
+    const result = await translator.translateText(line, "es", "en-US");
+    translations.push(result.text);
+  }
+  return translations;
+};
+
 module.exports = FormatTitle
